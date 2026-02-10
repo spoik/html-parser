@@ -11,28 +11,61 @@ import (
 func TestSuccessfulTagTypes(t *testing.T) {
 	type testCase struct {
 		string         string
-		expectedResult string
+		expectedResult *main.TagTypeResult
 	}
 
 	testCases := []testCase{
-		{"<a href=\"https://example.com\">Example</a>", "a"},
-		{"<html lang=\"en\">Example</a>", "html"},
-		{"<html>", "html"},
-		{"<hr/>", "hr"},
-		{"<hr", "hr"},
+		{
+			"<a href=\"https://example.com\">Example</a>",
+			&main.TagTypeResult{
+				TagType: "a",
+				EndPos:  1,
+			},
+		},
+		{
+			"<html lang=\"en\">Example</a>",
+			&main.TagTypeResult{
+				TagType: "html",
+				EndPos:  4,
+			},
+		},
+		{
+			"<html>",
+			&main.TagTypeResult{
+				TagType: "html",
+				EndPos:  4,
+			},
+		},
+		{
+			"<hr/>",
+			&main.TagTypeResult{
+				TagType: "hr",
+				EndPos:  2,
+			},
+		},
+		{
+			"<hr",
+			&main.TagTypeResult{
+				TagType: "hr",
+				EndPos:  2,
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
-		result, err := main.TagType(&testCase.string, 1)
+		t.Run(testCase.string, func(t *testing.T) {
+			t.Parallel()
+			result, err := main.TagType(&testCase.string, 1)
 
-		require.NoError(t, err)
+			require.NoError(t, err)
 
-		assert.Equal(
-			t,
-			testCase.expectedResult,
-			result,
-			"Test case: \"%s\"", testCase.string,
-		)
+			assert.Equal(
+				t,
+				testCase.expectedResult,
+				result,
+				"Test case: \"%s\"", testCase.string,
+			)
+		})
 	}
 }
 
