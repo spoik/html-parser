@@ -15,22 +15,30 @@ type Tag struct {
 	Type string
 }
 
-func ParseHtml(html *string) (*Tag, error) {
+func ParseHtml(html *string) (*[]Tag, error) {
+	var tags []Tag
+
 	for index, char := range *html {
-		if char == '<' {
-			tagTypeResult, err := TagType(html, index+1)
-
-			if err != nil {
-				return nil, err
-			}
-
-			return &Tag{
-				Type: tagTypeResult.TagType,
-			}, nil
+		if char != '<' {
+			continue
 		}
+
+		tagTypeResult, err := TagType(html, index+1)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, Tag{
+			Type: tagTypeResult.TagType,
+		})
 	}
 
-	return nil, fmt.Errorf("No HTML found in \"%s\"", *html)
+	if len(tags) == 0 {
+		return nil, fmt.Errorf("No HTML found in \"%s\"", *html)
+	}
+
+	return &tags, nil
 }
 
 type TagTypeResult struct {
@@ -57,7 +65,7 @@ func TagType(html *string, startPos int) (*TagTypeResult, error) {
 	}
 
 	if tagType.Len() == 0 {
-		return nil, fmt.Errorf("Unable to find tag type in \"%s\"", *html)
+		return nil, fmt.Errorf("Unable to find tag type in \"%s\" starting at position %d.", *html, startPos)
 	}
 
 	return &TagTypeResult{

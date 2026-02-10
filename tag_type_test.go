@@ -76,9 +76,9 @@ func TestFailureTagTypes(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{"<>", "Unable to find tag type in \"<>\""},
-		{"", "Unable to find tag type in \"\""},
-		{" ", "Unable to find tag type in \" \""},
+		{"<>", "Unable to find tag type in \"<>\" starting at position 1."},
+		{"", "Unable to find tag type in \"\" starting at position 1."},
+		{" ", "Unable to find tag type in \" \" starting at position 1."},
 	}
 
 	for _, testCase := range testCases {

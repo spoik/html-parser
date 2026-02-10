@@ -11,29 +11,36 @@ import (
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html        string
-		expectedTag main.Tag
+		expectedTag []main.Tag
 	}
 
 	testCases := []testCase{
 		{
-			"<a href=\"https://example.com\">Example</a>",
-			main.Tag{Type: "a"},
+			"<a href=\"https://example.com\">",
+			[]main.Tag{{Type: "a"}},
 		},
 		{
-			"<html lang=\"en\">Example</a>",
-			main.Tag{Type: "html"},
+			"<html lang=\"en\">",
+			[]main.Tag{{Type: "html"}},
 		},
 		{
 			"<html>",
-			main.Tag{Type: "html"},
+			[]main.Tag{{Type: "html"}},
 		},
 		{
 			"<hr/>",
-			main.Tag{Type: "hr"},
+			[]main.Tag{{Type: "hr"}},
 		},
 		{
 			"<hr",
-			main.Tag{Type: "hr"},
+			[]main.Tag{{Type: "hr"}},
+		},
+		{
+			"<div><hr>",
+			[]main.Tag{
+				{Type: "div"},
+				{Type: "hr"},
+			},
 		},
 	}
 
@@ -57,7 +64,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<>",
-			"Unable to find tag type in \"<>\"",
+			"Unable to find tag type in \"<>\" starting at position 1.",
 		},
 		{
 			"Example",
