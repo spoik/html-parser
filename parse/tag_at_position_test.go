@@ -8,45 +8,45 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSuccessfulTagTypes(t *testing.T) {
+func TestSuccessfulAtPosition(t *testing.T) {
 	type testCase struct {
 		string         string
-		expectedResult *parse.TagTypeResult
+		expectedResult *parse.TagAtPositionResult
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">Example</a>",
-			&parse.TagTypeResult{
-				TagType: "a",
+			&parse.TagAtPositionResult{
+				Tag: &parse.Tag{"a"},
 				EndPos:  1,
 			},
 		},
 		{
 			"<html lang=\"en\">Example</a>",
-			&parse.TagTypeResult{
-				TagType: "html",
+			&parse.TagAtPositionResult{
+				Tag: &parse.Tag{"html"},
 				EndPos:  4,
 			},
 		},
 		{
 			"<html>",
-			&parse.TagTypeResult{
-				TagType: "html",
+			&parse.TagAtPositionResult{
+				Tag: &parse.Tag{"html"},
 				EndPos:  4,
 			},
 		},
 		{
 			"<hr/>",
-			&parse.TagTypeResult{
-				TagType: "hr",
+			&parse.TagAtPositionResult{
+				Tag: &parse.Tag{"hr"},
 				EndPos:  2,
 			},
 		},
 		{
 			"<hr",
-			&parse.TagTypeResult{
-				TagType: "hr",
+			&parse.TagAtPositionResult{
+				Tag: &parse.Tag{"hr"},
 				EndPos:  2,
 			},
 		},
@@ -55,7 +55,7 @@ func TestSuccessfulTagTypes(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.string, func(t *testing.T) {
 			t.Parallel()
-			result, err := parse.TagType(&testCase.string, 1)
+			result, err := parse.TagAtPosition(&testCase.string, 1)
 
 			require.NoError(t, err)
 
@@ -69,7 +69,7 @@ func TestSuccessfulTagTypes(t *testing.T) {
 	}
 }
 
-func TestFailureTagTypes(t *testing.T) {
+func TestFailureTagAtPosition(t *testing.T) {
 	type testCase struct {
 		string       string
 		errorMessage string
@@ -82,7 +82,7 @@ func TestFailureTagTypes(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		_, err := parse.TagType(&testCase.string, 1)
+		_, err := parse.TagAtPosition(&testCase.string, 1)
 
 		assert.EqualError(
 			t,

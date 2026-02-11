@@ -12,7 +12,7 @@ type TagAtPositionResult struct {
 }
 
 func TagAtPosition(html *string, position int) (*TagAtPositionResult, error) {
-	result, err := TagType(html, position)
+	result, err := tagType(html, position)
 
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func TagAtPosition(html *string, position int) (*TagAtPositionResult, error) {
 	}, nil
 }
 
-type TagTypeResult struct {
+type tagTypeResult struct {
 	TagType string
 	EndPos  int
 }
@@ -34,7 +34,7 @@ type TagTypeResult struct {
 var tagTypeEndCharaacters = []byte{' ', '>', '/'}
 
 // TagType returns the tag type in html starting at position and the position in html where the tag type definition ends. For example, if html is "<html>", this function will return "html" and 4. Returns an error if a tag type can not be found.
-func TagType(html *string, position int) (*TagTypeResult, error) {
+func tagType(html *string, position int) (*tagTypeResult, error) {
 	var tagType strings.Builder
 	index := position
 
@@ -53,7 +53,7 @@ func TagType(html *string, position int) (*TagTypeResult, error) {
 		return nil, fmt.Errorf("Unable to find tag type in \"%s\" starting at position %d.", *html, position)
 	}
 
-	return &TagTypeResult{
+	return &tagTypeResult{
 		TagType: tagType.String(),
 		EndPos:  index - 1,
 	}, nil
