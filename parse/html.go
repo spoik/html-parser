@@ -1,30 +1,37 @@
 package parse
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/spoik/html-parser/stringreader"
+)
 
 type Tag struct {
 	Type string
 }
 
 func ParseHtml(html *string) (*[]Tag, error) {
+	sr := stringreader.New(*html)
 	var tags []Tag
 
-	for index := 0; index < len(*html); index++ {
-		char := (*html)[index]
-
-		if char != '<' {
-			continue
-		}
-
-		result, err := TagAtPosition(html, index+1)
+	for !sr.AtEnd() {
+		char, err := sr.ReadNext()
 
 		if err != nil {
 			return nil, err
 		}
 
-		tags = append(tags, *result.Tag)
+		if char != '<' {
+			continue
+		}
 
-		index = result.EndPos
+		tag, err := TagAtPosition(sr)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, *tag)
 	}
 
 	if len(tags) == 0 {

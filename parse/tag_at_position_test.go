@@ -4,67 +4,57 @@ import (
 	"testing"
 
 	"github.com/spoik/html-parser/parse"
+	"github.com/spoik/html-parser/stringreader"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSuccessfulAtPosition(t *testing.T) {
 	type testCase struct {
-		string         string
-		expectedResult *parse.TagAtPositionResult
+		string                 string
+		expectedTag            parse.Tag
+		expectedReaderPosition int
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">Example</a>",
-			&parse.TagAtPositionResult{
-				Tag: &parse.Tag{"a"},
-				EndPos:  1,
-			},
+			parse.Tag{"a"},
+			1,
 		},
 		{
 			"<html lang=\"en\">Example</a>",
-			&parse.TagAtPositionResult{
-				Tag: &parse.Tag{"html"},
-				EndPos:  4,
-			},
+			parse.Tag{"html"},
+			4,
 		},
 		{
 			"<html>",
-			&parse.TagAtPositionResult{
-				Tag: &parse.Tag{"html"},
-				EndPos:  4,
-			},
+			parse.Tag{"html"},
+			4,
 		},
 		{
 			"<hr/>",
-			&parse.TagAtPositionResult{
-				Tag: &parse.Tag{"hr"},
-				EndPos:  2,
-			},
+			parse.Tag{"hr"},
+			2,
 		},
 		{
 			"<hr",
-			&parse.TagAtPositionResult{
-				Tag: &parse.Tag{"hr"},
-				EndPos:  2,
-			},
+			parse.Tag{"hr"},
+			2,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.string, func(t *testing.T) {
 			t.Parallel()
-			result, err := parse.TagAtPosition(&testCase.string, 1)
+
+			sr := stringreader.New(testCase.string)
+			tag, err := parse.TagAtPosition(sr)
 
 			require.NoError(t, err)
 
-			assert.Equal(
-				t,
-				testCase.expectedResult,
-				result,
-				"Test case: \"%s\"", testCase.string,
-			)
+			assert.Equal(t, testCase.expectedTag, tag)
+			assert.Equal(t, testCase.expectedReaderPosition, sr.Position())
 		})
 	}
 }
@@ -82,13 +72,9 @@ func TestFailureTagAtPosition(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		_, err := parse.TagAtPosition(&testCase.string, 1)
+		sr := stringreader.New(testCase.string)
+		_, err := parse.TagAtPosition(sr)
 
-		assert.EqualError(
-			t,
-			err,
-			testCase.errorMessage,
-			"Test case: \"%s\"", testCase.string,
-		)
+		assert.EqualError(t, err, testCase.errorMessage)
 	}
 }
