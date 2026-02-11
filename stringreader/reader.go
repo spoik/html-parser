@@ -1,48 +1,48 @@
 package stringreader
 
-import "fmt"
+import (
+	"io"
+)
 
-type Reader struct {
-	string   string
-	position int
-	length   int
+type StringReader struct {
+	str   string
+	pos int
+	strLen   int
 }
 
-func New(string string) *Reader {
-	return &Reader{
-		string:   string,
-		length: len(string),
-		position: -1,
+func New(string string) *StringReader {
+	return &StringReader{
+		str:   string,
+		strLen:   len(string),
+		pos: -1,
 	}
 }
 
-func (sr *Reader) String() string {
-	return sr.string
+func (sr *StringReader) Position() int {
+	return sr.pos
 }
 
-func (sr *Reader) Position() int {
-	return sr.position
-}
+func (sr *StringReader) Read(p []byte) (n int, err error) {
+	var readLen int
 
-func (sr *Reader) AtEnd() bool {
-	return sr.position == sr.length
-}
+	for readLen = range len(p) {
+		err = sr.advancePosition()
 
-func (sr *Reader) ReadNext() (byte, error) {
-	err := sr.advancePosition()
+		if err != nil {
+			return readLen, err
+		}
 
-	if err != nil {
-		return 0, err
+		p[readLen] = sr.str[sr.pos]
 	}
 
-	return sr.string[sr.position], nil
+	return readLen + 1, nil
 }
 
-func (sr *Reader) advancePosition() error {
-	if sr.position == sr.length {
-		return fmt.Errorf("At the end of the string.")
+func (sr *StringReader) advancePosition() error {
+	if sr.pos == sr.strLen-1 {
+		return io.EOF
 	}
 
-	sr.position++
+	sr.pos++
 	return nil
 }

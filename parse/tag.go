@@ -2,14 +2,13 @@ package parse
 
 import (
 	"fmt"
+	"io"
 	"slices"
 	"strings"
-
-	"github.com/spoik/html-parser/stringreader"
 )
 
-func TagAtPosition(sr *stringreader.Reader) (*Tag, error) {
-	tagType, err := tagType(sr)
+func TagAtPosition(r io.Reader) (*Tag, error) {
+	tagType, err := tagType(r)
 
 	if err != nil {
 		return nil, err
@@ -20,29 +19,29 @@ func TagAtPosition(sr *stringreader.Reader) (*Tag, error) {
 
 var tagTypeEndCharaacters = []byte{' ', '>', '/'}
 
-func tagType(sr *stringreader.Reader) (string, error) {
+func tagType(r io.Reader) (string, error) {
 	var tagType strings.Builder
 
-	for !sr.AtEnd() {
-		char, err := sr.ReadNext()
+	bytes := make([]byte, 1)
+
+	for {
+		_, err := r.Read(bytes)
 
 		if err != nil {
 			return "", err
 		}
 
-		if slices.Contains(tagTypeEndCharaacters, char) {
+		byte := bytes[0]
+
+		if slices.Contains(tagTypeEndCharaacters, byte) {
 			break
 		}
 
-		tagType.WriteByte(char)
+		tagType.WriteByte(byte)
 	}
 
 	if tagType.Len() == 0 {
-		return "", fmt.Errorf(
-			"Unable to find tag type in \"%s\" starting at position %d.",
-			sr.String(),
-			sr.Position(),
-		)
+		return "", fmt.Errorf("Unable to find tag type.")
 	}
 
 	return tagType.String(), nil

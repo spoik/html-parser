@@ -13,9 +13,10 @@ type Tag struct {
 func ParseHtml(html *string) (*[]Tag, error) {
 	sr := stringreader.New(*html)
 	var tags []Tag
+	bytes := make([]byte, 1)
 
-	for !sr.AtEnd() {
-		char, err := sr.ReadNext()
+	for {
+		char, err := sr.Read(bytes)
 
 		if err != nil {
 			return nil, err
