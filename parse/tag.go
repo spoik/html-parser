@@ -1,60 +1,53 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"slices"
 	"strings"
 )
 
-type TagAtPositionResult struct {
-	Tag    *Tag
-	EndPos int
-}
-
-func TagAtPosition(html *string, position int) (*TagAtPositionResult, error) {
-	result, err := tagType(html, position)
+func TagAtPosition(r io.Reader) (*Tag, error) {
+	tagType, err := tagType(r)
 
 	if err != nil {
 		return nil, err
 	}
 
-	tag := Tag{Type: result.TagType}
-
-	return &TagAtPositionResult{
-		Tag:    &tag,
-		EndPos: result.EndPos,
-	}, nil
-}
-
-type tagTypeResult struct {
-	TagType string
-	EndPos  int
+	return &Tag{Type: tagType}, nil
 }
 
 var tagTypeEndCharaacters = []byte{' ', '>', '/'}
 
-// TagType returns the tag type in html starting at position and the position in html where the tag type definition ends. For example, if html is "<html>", this function will return "html" and 4. Returns an error if a tag type can not be found.
-func tagType(html *string, position int) (*tagTypeResult, error) {
+func tagType(r io.Reader) (string, error) {
 	var tagType strings.Builder
-	index := position
 
-	for index < len(*html) {
-		char := (*html)[index]
+	bytes := make([]byte, 1)
 
-		if slices.Contains(tagTypeEndCharaacters, char) {
+	for {
+		_, err := r.Read(bytes)
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return "", err
+		}
+
+		byte := bytes[0]
+
+		if slices.Contains(tagTypeEndCharaacters, byte) {
 			break
 		}
 
-		tagType.WriteByte(char)
-		index++
+		tagType.WriteByte(byte)
 	}
 
 	if tagType.Len() == 0 {
-		return nil, fmt.Errorf("Unable to find tag type in \"%s\" starting at position %d.", *html, position)
+		return "", fmt.Errorf("Unable to find tag type.")
 	}
 
-	return &tagTypeResult{
-		TagType: tagType.String(),
-		EndPos:  index - 1,
-	}, nil
+	return tagType.String(), nil
 }
