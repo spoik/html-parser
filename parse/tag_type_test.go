@@ -1,9 +1,9 @@
-package main_test
+package parse_test
 
 import (
 	"testing"
 
-	"github.com/spoik/html-parser"
+	"github.com/spoik/html-parser/parse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -11,41 +11,41 @@ import (
 func TestSuccessfulTagTypes(t *testing.T) {
 	type testCase struct {
 		string         string
-		expectedResult *main.TagTypeResult
+		expectedResult *parse.TagTypeResult
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">Example</a>",
-			&main.TagTypeResult{
+			&parse.TagTypeResult{
 				TagType: "a",
 				EndPos:  1,
 			},
 		},
 		{
 			"<html lang=\"en\">Example</a>",
-			&main.TagTypeResult{
+			&parse.TagTypeResult{
 				TagType: "html",
 				EndPos:  4,
 			},
 		},
 		{
 			"<html>",
-			&main.TagTypeResult{
+			&parse.TagTypeResult{
 				TagType: "html",
 				EndPos:  4,
 			},
 		},
 		{
 			"<hr/>",
-			&main.TagTypeResult{
+			&parse.TagTypeResult{
 				TagType: "hr",
 				EndPos:  2,
 			},
 		},
 		{
 			"<hr",
-			&main.TagTypeResult{
+			&parse.TagTypeResult{
 				TagType: "hr",
 				EndPos:  2,
 			},
@@ -55,7 +55,7 @@ func TestSuccessfulTagTypes(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.string, func(t *testing.T) {
 			t.Parallel()
-			result, err := main.TagType(&testCase.string, 1)
+			result, err := parse.TagType(&testCase.string, 1)
 
 			require.NoError(t, err)
 
@@ -82,7 +82,7 @@ func TestFailureTagTypes(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		_, err := main.TagType(&testCase.string, 1)
+		_, err := parse.TagType(&testCase.string, 1)
 
 		assert.EqualError(
 			t,

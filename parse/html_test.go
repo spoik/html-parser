@@ -1,9 +1,9 @@
-package main_test
+package parse_test
 
 import (
 	"testing"
 
-	"github.com/spoik/html-parser"
+	"github.com/spoik/html-parser/parse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -11,33 +11,33 @@ import (
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html        string
-		expectedTag []main.Tag
+		expectedTag []parse.Tag
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			[]main.Tag{{Type: "a"}},
+			[]parse.Tag{{Type: "a"}},
 		},
 		{
 			"<html lang=\"en\">",
-			[]main.Tag{{Type: "html"}},
+			[]parse.Tag{{Type: "html"}},
 		},
 		{
 			"<html>",
-			[]main.Tag{{Type: "html"}},
+			[]parse.Tag{{Type: "html"}},
 		},
 		{
 			"<hr/>",
-			[]main.Tag{{Type: "hr"}},
+			[]parse.Tag{{Type: "hr"}},
 		},
 		{
 			"<hr",
-			[]main.Tag{{Type: "hr"}},
+			[]parse.Tag{{Type: "hr"}},
 		},
 		{
 			"<div><hr>",
-			[]main.Tag{
+			[]parse.Tag{
 				{Type: "div"},
 				{Type: "hr"},
 			},
@@ -47,7 +47,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.html, func(t *testing.T) {
 			t.Parallel()
-			tag, err := main.ParseHtml(&testCase.html)
+			tag, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
 			assert.Equal(t, testCase.expectedTag, *tag)
@@ -79,7 +79,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.html, func(t *testing.T) {
 			t.Parallel()
-			tag, err := main.ParseHtml(&testCase.html)
+			tag, err := parse.ParseHtml(&testCase.html)
 
 			require.Error(t, err)
 			assert.Nil(t, tag)
