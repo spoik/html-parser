@@ -12,34 +12,34 @@ import (
 func TestSuccessfulAtPosition(t *testing.T) {
 	type testCase struct {
 		string                 string
-		expectedTag            parse.Tag
+		expectedTag            *parse.Tag
 		expectedReaderPosition int
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">Example</a>",
-			parse.Tag{"a"},
-			1,
-		},
-		{
-			"<html lang=\"en\">Example</a>",
-			parse.Tag{"html"},
-			4,
-		},
-		{
-			"<html>",
-			parse.Tag{"html"},
-			4,
-		},
-		{
-			"<hr/>",
-			parse.Tag{"hr"},
+			&parse.Tag{"a"},
 			2,
 		},
 		{
+			"<html lang=\"en\">Example</a>",
+			&parse.Tag{"html"},
+			5,
+		},
+		{
+			"<html>",
+			&parse.Tag{"html"},
+			5,
+		},
+		{
+			"<hr/>",
+			&parse.Tag{"hr"},
+			3,
+		},
+		{
 			"<hr",
-			parse.Tag{"hr"},
+			&parse.Tag{"hr"},
 			2,
 		},
 	}
@@ -49,6 +49,7 @@ func TestSuccessfulAtPosition(t *testing.T) {
 			t.Parallel()
 
 			sr := stringreader.New(testCase.string)
+			sr.Read(make([]byte, 1))
 			tag, err := parse.TagAtPosition(sr)
 
 			require.NoError(t, err)
@@ -66,15 +67,21 @@ func TestFailureTagAtPosition(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{"<>", "Unable to find tag type in \"<>\" starting at position 1."},
-		{"", "Unable to find tag type in \"\" starting at position 1."},
-		{" ", "Unable to find tag type in \" \" starting at position 1."},
+		{"<>", "Unable to find tag type."},
+		{"", "Unable to find tag type."},
+		{" ", "Unable to find tag type."},
 	}
 
 	for _, testCase := range testCases {
-		sr := stringreader.New(testCase.string)
-		_, err := parse.TagAtPosition(sr)
+		t.Run(testCase.string, func(t *testing.T) {
+			t.Parallel()
 
-		assert.EqualError(t, err, testCase.errorMessage)
+			sr := stringreader.New(testCase.string)
+			sr.Read(make([]byte, 1))
+
+			_, err := parse.TagAtPosition(sr)
+
+			assert.EqualError(t, err, testCase.errorMessage)
+		})
 	}
 }

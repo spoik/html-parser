@@ -1,7 +1,9 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/spoik/html-parser/stringreader"
 )
@@ -16,11 +18,17 @@ func ParseHtml(html *string) (*[]Tag, error) {
 	bytes := make([]byte, 1)
 
 	for {
-		char, err := sr.Read(bytes)
+		_, err := sr.Read(bytes)
+
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
 		if err != nil {
 			return nil, err
 		}
+
+		char := bytes[0]
 
 		if char != '<' {
 			continue

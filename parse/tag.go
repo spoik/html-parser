@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"slices"
@@ -26,6 +27,10 @@ func tagType(r io.Reader) (string, error) {
 
 	for {
 		_, err := r.Read(bytes)
+
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
 		if err != nil {
 			return "", err
