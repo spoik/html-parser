@@ -20,11 +20,11 @@ func ParseHtml(html *string) (*[]Tag, error) {
 	for {
 		_, err := sr.Read(bytes)
 
-		if errors.Is(err, io.EOF) {
-			break
-		}
-
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
 			return nil, err
 		}
 

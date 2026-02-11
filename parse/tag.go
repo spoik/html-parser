@@ -28,11 +28,11 @@ func tagType(r io.Reader) (string, error) {
 	for {
 		_, err := r.Read(bytes)
 
-		if errors.Is(err, io.EOF) {
-			break
-		}
-
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
 			return "", err
 		}
 
