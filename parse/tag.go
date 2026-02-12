@@ -1,18 +1,21 @@
 package parse
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"slices"
 	"strings"
+
+	"github.com/spoik/html-parser/html"
 )
 
-var tagEndCharaacters = []byte{'>', '/'}
+var tagEndCharacters = []byte{'>', '/'}
 
-func ParseTag(r io.Reader) (*Tag, error) {
+func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 	var tagType strings.Builder
-	var attributes []Attribute
+	var attributes []*html.Attribute
 
 	bytes := make([]byte, 1)
 
@@ -29,8 +32,7 @@ func ParseTag(r io.Reader) (*Tag, error) {
 
 		byte := bytes[0]
 
-		if slices.Contains(tagEndCharaacters, byte) {
-			attributes = make([]Attribute, 0)
+		if slices.Contains(tagEndCharacters, byte) {
 			break
 		}
 
@@ -40,23 +42,19 @@ func ParseTag(r io.Reader) (*Tag, error) {
 			if err != nil {
 				return nil, err
 			}
+		} else {
+			tagType.WriteByte(byte)
 		}
-
-		tagType.WriteByte(byte)
 	}
 
 	if tagType.Len() == 0 {
 		return nil, fmt.Errorf("Unable to find tag.")
 	}
 
-	tag := &Tag{
-		tagType.String(),
-		attributes,
+	tag := &html.Tag{
+		Type:       tagType.String(),
+		Attributes: attributes,
 	}
 
 	return tag, nil
-}
-
-func parseAttributes(r io.Reader) ([]Attribute, error) {
-	return make([]Attribute, 0), nil
 }

@@ -3,39 +3,63 @@ package parse_test
 import (
 	"testing"
 
-	"github.com/spoik/html-parser/parse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/spoik/html-parser/html"
+	"github.com/spoik/html-parser/parse"
 )
 
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
-		html        string
-		expectedTag []parse.Tag
+		html         string
+		expectedTags *[]*html.Tag
 	}
 
 	testCases := []testCase{
 		{
-			"<a href=\"https://example.com\">",
-			[]parse.Tag{{"a", []parse.Attribute{}}},
+			"<a href>",
+			&[]*html.Tag{{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{Name: "href"},
+				},
+			}},
 		},
 		{
 			"<html>",
-			[]parse.Tag{{"html", []parse.Attribute{}}},
+			&[]*html.Tag{{
+				Type:       "html",
+				Attributes: []*html.Attribute(nil),
+			}},
 		},
 		{
 			"<hr/>",
-			[]parse.Tag{{"hr", []parse.Attribute{}}},
+			&[]*html.Tag{{
+				Type:       "hr",
+				Attributes: []*html.Attribute(nil),
+			}},
 		},
 		{
 			"<hr",
-			[]parse.Tag{{"hr", []parse.Attribute{}}},
+			&[]*html.Tag{
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
 		},
 		{
 			"<div><hr>",
-			[]parse.Tag{
-				{"div", []parse.Attribute{}},
-				{"hr", []parse.Attribute{}},
+			&[]*html.Tag{
+				{
+					Type:       "div",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
 			},
 		},
 	}
@@ -43,10 +67,10 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.html, func(t *testing.T) {
 			t.Parallel()
-			tag, err := parse.ParseHtml(&testCase.html)
+			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
-			assert.Equal(t, testCase.expectedTag, *tag)
+			assert.Equal(t, testCase.expectedTags, tags)
 		})
 	}
 }

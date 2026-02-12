@@ -1,58 +1,85 @@
 package parse_test
 
 import (
+	"bufio"
 	"testing"
 
-	"github.com/spoik/html-parser/parse"
-	"github.com/spoik/html-parser/stringreader"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/spoik/html-parser/html"
+	"github.com/spoik/html-parser/parse"
+	"github.com/spoik/html-parser/stringreader"
 )
 
 func TestSuccessfulParseTag(t *testing.T) {
 	type testCase struct {
 		string                 string
-		expectedTag            *parse.Tag
+		expectedTag            *html.Tag
 		expectedReaderPosition int
 	}
 
 	testCases := []testCase{
 		{
-			"<a href=\"https://example.com\">Example</a>",
-			&parse.Tag{
-				"a",
-				[]parse.Attribute{{
-					"href",
-					"https://example.com",
-				}},
+			"<a href>Example</a>",
+			&html.Tag{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{Name: "href"},
+				},
 			},
-			2,
+			15,
 		},
 		{
-			"<html lang=\"en\">Example</a>",
-			&parse.Tag{
-				"html",
-				[]parse.Attribute{{
-					"lang",
-					"en",
-				}},
+			"<html lang>Example</a>",
+			&html.Tag{
+				Type: "html",
+				Attributes: []*html.Attribute{
+					{Name: "lang"},
+				},
 			},
-			5,
+			15,
 		},
 		{
 			"<html>",
-			&parse.Tag{"html", []parse.Attribute{}},
+			&html.Tag{
+				Type:       "html",
+				Attributes: []*html.Attribute(nil)},
 			5,
 		},
 		{
+			"<hr data-test/>",
+			&html.Tag{
+				Type: "hr",
+				Attributes: []*html.Attribute{
+					{Name: "data-test"},
+				},
+			},
+			14,
+		},
+		{
 			"<hr/>",
-			&parse.Tag{"hr", []parse.Attribute{}},
-			3,
+			&html.Tag{
+				Type:       "hr",
+				Attributes: []*html.Attribute(nil)},
+			4,
 		},
 		{
 			"<hr",
-			&parse.Tag{"hr", []parse.Attribute{}},
+			&html.Tag{
+				Type:       "hr",
+				Attributes: []*html.Attribute(nil)},
 			2,
+		},
+		{
+			"<hr data",
+			&html.Tag{
+				Type: "hr",
+				Attributes: []*html.Attribute{
+					{Name: "data"},
+				},
+			},
+			7,
 		},
 	}
 
@@ -61,8 +88,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 			t.Parallel()
 
 			sr := stringreader.New(testCase.string)
-			sr.Read(make([]byte, 1))
-			tag, err := parse.ParseTag(sr)
+			r := bufio.NewReaderSize(sr, 2)
+			r.Discard(1)
+
+			tag, err := parse.ParseTag(r)
 
 			require.NoError(t, err)
 
@@ -89,9 +118,10 @@ func TestFailureParseTag(t *testing.T) {
 			t.Parallel()
 
 			sr := stringreader.New(testCase.string)
-			sr.Read(make([]byte, 1))
+			r := bufio.NewReaderSize(sr, 2)
+			r.Discard(1)
 
-			_, err := parse.ParseTag(sr)
+			_, err := parse.ParseTag(r)
 
 			assert.EqualError(t, err, testCase.errorMessage)
 		})

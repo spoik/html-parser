@@ -1,0 +1,84 @@
+package parse
+
+import (
+	"bufio"
+	"errors"
+	"io"
+	"slices"
+	"strings"
+
+	"github.com/spoik/html-parser/html"
+)
+
+var attributeNameEndCharacters = []byte{' ', '>', '/', '='}
+
+func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
+	// Make an educated guess that most html elements will have ~5 attributes
+	attributes := make([]*html.Attribute, 5)
+
+	for {
+		attribute, err := parseAttribute(r)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributes = append(attributes, attribute)
+
+		bytes, err := r.Peek(1)
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return nil, err
+		}
+
+		byte := bytes[0]
+
+		if slices.Contains(attributeNameEndCharacters, byte) {
+			break
+		}
+	}
+
+	attributes = slices.DeleteFunc(attributes, func(a *html.Attribute) bool {
+		return a == nil
+	})
+
+	return attributes, nil
+}
+
+func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
+	var attributeName strings.Builder
+	var err error
+	bytes := make([]byte, 1)
+
+	for {
+		bytes, err = r.Peek(1)
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return nil, err
+		}
+
+		byte := bytes[0]
+
+		if slices.Contains(attributeNameEndCharacters, byte) {
+			break
+		}
+
+		_, err = r.Discard(1)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attributeName.WriteByte(byte)
+	}
+
+	return &html.Attribute{Name: attributeName.String()}, nil
+}
