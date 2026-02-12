@@ -56,11 +56,9 @@ var attributeNameEndCharacters = []byte{' ', '='}
 
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 	var attributeName strings.Builder
-	var err error
-	bytes := make([]byte, 1)
 
 	for {
-		bytes, err = r.Peek(1)
+		bytes, err := r.Peek(1)
 
 		if err != nil {
 			if errors.Is(err, io.EOF) {
