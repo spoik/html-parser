@@ -8,6 +8,11 @@ import (
 	"github.com/spoik/html-parser/stringreader"
 )
 
+type Attribute struct {
+	Name string
+	Value string
+}
+
 type Tag struct {
 	Type string
 }
@@ -34,7 +39,7 @@ func ParseHtml(html *string) (*[]Tag, error) {
 			continue
 		}
 
-		tag, err := TagAtPosition(sr)
+		tag, err := ParseTag(sr)
 
 		if err != nil {
 			return nil, err

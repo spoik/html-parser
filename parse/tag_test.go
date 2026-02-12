@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSuccessfulAtPosition(t *testing.T) {
+func TestSuccessfulParseTag(t *testing.T) {
 	type testCase struct {
 		string                 string
 		expectedTag            *parse.Tag
@@ -19,27 +19,39 @@ func TestSuccessfulAtPosition(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">Example</a>",
-			&parse.Tag{"a"},
+			&parse.Tag{
+				"a",
+				[]parse.Attribute{{
+					"href",
+					"https://example.com",
+				}},
+			},
 			2,
 		},
 		{
 			"<html lang=\"en\">Example</a>",
-			&parse.Tag{"html"},
+			&parse.Tag{
+				"html",
+				[]parse.Attribute{{
+					"lang",
+					"en",
+				}},
+			},
 			5,
 		},
 		{
 			"<html>",
-			&parse.Tag{"html"},
+			&parse.Tag{"html", []parse.Attribute{}},
 			5,
 		},
 		{
 			"<hr/>",
-			&parse.Tag{"hr"},
+			&parse.Tag{"hr", []parse.Attribute{}},
 			3,
 		},
 		{
 			"<hr",
-			&parse.Tag{"hr"},
+			&parse.Tag{"hr", []parse.Attribute{}},
 			2,
 		},
 	}
@@ -50,7 +62,7 @@ func TestSuccessfulAtPosition(t *testing.T) {
 
 			sr := stringreader.New(testCase.string)
 			sr.Read(make([]byte, 1))
-			tag, err := parse.TagAtPosition(sr)
+			tag, err := parse.ParseTag(sr)
 
 			require.NoError(t, err)
 
@@ -60,16 +72,16 @@ func TestSuccessfulAtPosition(t *testing.T) {
 	}
 }
 
-func TestFailureTagAtPosition(t *testing.T) {
+func TestFailureParseTag(t *testing.T) {
 	type testCase struct {
 		string       string
 		errorMessage string
 	}
 
 	testCases := []testCase{
-		{"<>", "Unable to find tag type."},
-		{"", "Unable to find tag type."},
-		{" ", "Unable to find tag type."},
+		{"<>", "Unable to find tag."},
+		{"", "Unable to find tag."},
+		{" ", "Unable to find tag."},
 	}
 
 	for _, testCase := range testCases {
@@ -79,7 +91,7 @@ func TestFailureTagAtPosition(t *testing.T) {
 			sr := stringreader.New(testCase.string)
 			sr.Read(make([]byte, 1))
 
-			_, err := parse.TagAtPosition(sr)
+			_, err := parse.ParseTag(sr)
 
 			assert.EqualError(t, err, testCase.errorMessage)
 		})

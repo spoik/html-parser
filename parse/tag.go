@@ -8,20 +8,11 @@ import (
 	"strings"
 )
 
-func TagAtPosition(r io.Reader) (*Tag, error) {
-	tagType, err := tagType(r)
+var tagEndCharaacters = []byte{'>', '/'}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &Tag{Type: tagType}, nil
-}
-
-var tagTypeEndCharaacters = []byte{' ', '>', '/'}
-
-func tagType(r io.Reader) (string, error) {
+func ParseTag(r io.Reader) (*Tag, error) {
 	var tagType strings.Builder
+	var attributes []Attribute
 
 	bytes := make([]byte, 1)
 
@@ -33,21 +24,39 @@ func tagType(r io.Reader) (string, error) {
 				break
 			}
 
-			return "", err
+			return nil, err
 		}
 
 		byte := bytes[0]
 
-		if slices.Contains(tagTypeEndCharaacters, byte) {
+		if slices.Contains(tagEndCharaacters, byte) {
+			attributes = make([]Attribute, 0)
 			break
+		}
+
+		if byte == ' ' {
+			attributes, err = parseAttributes(r)
+
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		tagType.WriteByte(byte)
 	}
 
 	if tagType.Len() == 0 {
-		return "", fmt.Errorf("Unable to find tag type.")
+		return nil, fmt.Errorf("Unable to find tag.")
 	}
 
-	return tagType.String(), nil
+	tag := &Tag{
+		tagType.String(),
+		attributes,
+	}
+
+	return tag, nil
+}
+
+func parseAttributes(r io.Reader) ([]Attribute, error) {
+	return make([]Attribute, 0), nil
 }

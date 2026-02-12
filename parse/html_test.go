@@ -17,29 +17,25 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			[]parse.Tag{{Type: "a"}},
-		},
-		{
-			"<html lang=\"en\">",
-			[]parse.Tag{{Type: "html"}},
+			[]parse.Tag{{"a", []parse.Attribute{}}},
 		},
 		{
 			"<html>",
-			[]parse.Tag{{Type: "html"}},
+			[]parse.Tag{{"html", []parse.Attribute{}}},
 		},
 		{
 			"<hr/>",
-			[]parse.Tag{{Type: "hr"}},
+			[]parse.Tag{{"hr", []parse.Attribute{}}},
 		},
 		{
 			"<hr",
-			[]parse.Tag{{Type: "hr"}},
+			[]parse.Tag{{"hr", []parse.Attribute{}}},
 		},
 		{
 			"<div><hr>",
 			[]parse.Tag{
-				{Type: "div"},
-				{Type: "hr"},
+				{"div", []parse.Attribute{}},
+				{"hr", []parse.Attribute{}},
 			},
 		},
 	}
@@ -64,7 +60,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<>",
-			"Unable to find tag type.",
+			"Unable to find tag.",
 		},
 		{
 			"Example",
