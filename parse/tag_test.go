@@ -31,6 +31,17 @@ func TestSuccessfulParseTag(t *testing.T) {
 			15,
 		},
 		{
+			"<a href class>Example</a>",
+			&html.Tag{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{Name: "href"},
+					{Name: "class"},
+				},
+			},
+			15,
+		},
+		{
 			"<html lang>Example</a>",
 			&html.Tag{
 				Type: "html",

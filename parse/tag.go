@@ -42,9 +42,11 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else {
-			tagType.WriteByte(byte)
+
+			continue
 		}
+
+		tagType.WriteByte(byte)
 	}
 
 	if tagType.Len() == 0 {
