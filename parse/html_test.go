@@ -3,43 +3,63 @@ package parse_test
 import (
 	"testing"
 
-	"github.com/spoik/html-parser/parse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/spoik/html-parser/html"
+	"github.com/spoik/html-parser/parse"
 )
 
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
-		html        string
-		expectedTag []parse.Tag
+		html         string
+		expectedTags *[]*html.Tag
 	}
 
 	testCases := []testCase{
 		{
-			"<a href=\"https://example.com\">",
-			[]parse.Tag{{Type: "a"}},
-		},
-		{
-			"<html lang=\"en\">",
-			[]parse.Tag{{Type: "html"}},
+			"<a href>",
+			&[]*html.Tag{{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{Name: "href"},
+				},
+			}},
 		},
 		{
 			"<html>",
-			[]parse.Tag{{Type: "html"}},
+			&[]*html.Tag{{
+				Type:       "html",
+				Attributes: []*html.Attribute(nil),
+			}},
 		},
 		{
 			"<hr/>",
-			[]parse.Tag{{Type: "hr"}},
+			&[]*html.Tag{{
+				Type:       "hr",
+				Attributes: []*html.Attribute(nil),
+			}},
 		},
 		{
 			"<hr",
-			[]parse.Tag{{Type: "hr"}},
+			&[]*html.Tag{
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
 		},
 		{
 			"<div><hr>",
-			[]parse.Tag{
-				{Type: "div"},
-				{Type: "hr"},
+			&[]*html.Tag{
+				{
+					Type:       "div",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
 			},
 		},
 	}
@@ -47,10 +67,10 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.html, func(t *testing.T) {
 			t.Parallel()
-			tag, err := parse.ParseHtml(&testCase.html)
+			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
-			assert.Equal(t, testCase.expectedTag, *tag)
+			assert.Equal(t, testCase.expectedTags, tags)
 		})
 	}
 }
@@ -64,7 +84,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<>",
-			"Unable to find tag type.",
+			"Unable to find tag.",
 		},
 		{
 			"Example",
