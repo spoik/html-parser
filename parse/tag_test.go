@@ -21,14 +21,17 @@ func TestSuccessfulParseTag(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			"<a href>Example</a>",
+			"<a href=\"http://www.example.com\">Example</a>",
 			&html.Tag{
 				Type: "a",
 				Attributes: []*html.Attribute{
-					{Name: "href"},
+					{
+						Name: "href",
+						Value: "http://www.example.com",
+					},
 				},
 			},
-			15,
+			43,
 		},
 		{
 			"<a href class>Example</a>",
@@ -40,6 +43,23 @@ func TestSuccessfulParseTag(t *testing.T) {
 				},
 			},
 			15,
+		},
+		{
+			"<a href=\"http://www.example.com\" class=\"btn btn-primary\">Example</a>",
+			&html.Tag{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{
+						Name: "href",
+						Value: "http://www.example.com",
+					},
+					{
+						Name: "class",
+						Value: "btn btn-primary",
+					},
+				},
+			},
+			62,
 		},
 		{
 			"<html lang>Example</a>",

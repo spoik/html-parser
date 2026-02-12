@@ -18,11 +18,14 @@ func TestSuccessfulParseHtml(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			"<a href>",
+			"<a href=\"https://example.com\">",
 			&[]*html.Tag{{
 				Type: "a",
 				Attributes: []*html.Attribute{
-					{Name: "href"},
+					{
+						Name: "href",
+						Value: "https://example.com",
+					},
 				},
 			}},
 		},
