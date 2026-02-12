@@ -62,6 +62,45 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				},
 			},
 		},
+		{
+			"<img src><hr data>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
+					Attributes: []*html.Attribute{{Name: "src"}},
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute{{Name: "data"}},
+				},
+			},
+		},
+		{
+			"<img src/><hr data/>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
+					Attributes: []*html.Attribute{{Name: "src"}},
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute{{Name: "data"}},
+				},
+			},
+		},
+		{
+			"<img/><hr/>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
