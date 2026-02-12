@@ -8,7 +8,7 @@ import (
 )
 
 func parseValue(r *bufio.Reader) (string, error) {
-	_, err := skipOpeningQuote(r)
+	hasOpeningQuote, err := skipOpeningQuote(r)
 
 	if err != nil {
 		return "", err
@@ -39,6 +39,14 @@ func parseValue(r *bufio.Reader) (string, error) {
 			if selfClosingTag {
 				break
 			}
+		}
+
+		if byte == '>' {
+			break
+		}
+
+		if !hasOpeningQuote && byte == ' ' {
+			break
 		}
 
 		if byte == '"' {

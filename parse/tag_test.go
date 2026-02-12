@@ -75,6 +75,32 @@ func TestSuccessfulParseTag(t *testing.T) {
 			15,
 		},
 		{
+			"<a class=\"btn>Example</a>",
+			&html.Tag{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{
+						Name: "class",
+						Value: "btn",
+					},
+				},
+			},
+			15,
+		},
+		{
+			"<a class=btn\">Example</a>",
+			&html.Tag{
+				Type: "a",
+				Attributes: []*html.Attribute{
+					{
+						Name: "class",
+						Value: "btn",
+					},
+				},
+			},
+			15,
+		},
+		{
 			"<a class=btn btn-primary>Example</a>",
 			&html.Tag{
 				Type: "a",
@@ -106,6 +132,19 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type:       "html",
 				Attributes: []*html.Attribute(nil)},
 			5,
+		},
+		{
+			"<hr class=bold/>",
+			&html.Tag{
+				Type: "hr",
+				Attributes: []*html.Attribute{
+					{
+						Name: "class",
+						Value: "bold",
+					},
+				},
+			},
+			15,
 		},
 		{
 			"<hr data-test/>",
@@ -171,8 +210,6 @@ func TestFailureParseTag(t *testing.T) {
 		{"<>", "Unable to find tag."},
 		{"", "Unable to find tag."},
 		{" ", "Unable to find tag."},
-		{"<a class=\"btn>", "\"a\" tag closed before it's \"class\" attribute is closed."},
-		{"<a class=btn\">", "\"a\" tag \"class\" attribute is closed with a quote but was not opened with a quote."},
 	}
 
 	for _, testCase := range testCases {
