@@ -8,7 +8,7 @@ import (
 )
 
 func parseValue(r *bufio.Reader) (string, error) {
-	err := skipOpeningQuote(r)
+	_, err := skipOpeningQuote(r)
 
 	if err != nil {
 		return "", err
@@ -63,26 +63,28 @@ func parseValue(r *bufio.Reader) (string, error) {
 	return value.String(), nil
 }
 
-func skipOpeningQuote(r *bufio.Reader) error {
+func skipOpeningQuote(r *bufio.Reader) (bool, error) {
 	bytes, err := r.Peek(1)
 
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			return nil
+			return false, nil
 		}
 
-		return err
+		return false, err
 	}
 
 	if bytes[0] == '"' {
 		_, err = r.Discard(1)
 
 		if err != nil {
-			return err
+			return false, err
 		}
+
+		return true, nil
 	}
 
-	return nil
+	return false, nil
 }
 
 func nextTwoBytesAreSelfClosingTag(r *bufio.Reader) (bool, error) {
