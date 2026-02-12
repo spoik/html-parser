@@ -1,1 +1,2 @@
+- ( ) Use range-over-function for scanning through html instead of a for loop and bufio.Reader Read, Peak, and Discard
 - ( ) Revamp package names
