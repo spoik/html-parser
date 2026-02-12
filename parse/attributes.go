@@ -10,6 +10,12 @@ import (
 	"github.com/spoik/html-parser/html"
 )
 
+var attrNameEndChar = []byte{' ', '='}
+
+func isAttrNameEndChar(byte byte) bool {
+	return slices.Contains(attrNameEndChar, byte)
+}
+
 func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 	// Make an educated guess that most html elements will have ~5 attributes
 	attributes := make([]*html.Attribute, 5)
@@ -27,11 +33,11 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 
 		byte := bytes[0]
 
-		if slices.Contains(tagEndCharacters, byte) {
+		if isTagEndChar(byte) {
 			break
 		}
 
-		if slices.Contains(attributeNameEndCharacters, byte) {
+		if isAttrNameEndChar(byte) {
 			r.Discard(1)
 			continue
 		}
@@ -52,8 +58,6 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 	return attributes, nil
 }
 
-var attributeNameEndCharacters = []byte{' ', '='}
-
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 	var attributeName strings.Builder
 
@@ -70,11 +74,7 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 
 		byte := bytes[0]
 
-		if slices.Contains(attributeNameEndCharacters, byte) {
-			break
-		}
-
-		if slices.Contains(tagEndCharacters, byte) {
+		if isTagEndChar(byte) || isAttrNameEndChar(byte) {
 			break
 		}
 

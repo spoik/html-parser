@@ -11,7 +11,11 @@ import (
 	"github.com/spoik/html-parser/html"
 )
 
-var tagEndCharacters = []byte{'>', '/'}
+var tagEndChars = []byte{'>', '/'}
+
+func isTagEndChar(byte byte) bool {
+	return slices.Contains(tagEndChars, byte)
+}
 
 func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 	var tagType strings.Builder
@@ -32,7 +36,7 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 
 		byte := bytes[0]
 
-		if slices.Contains(tagEndCharacters, byte) {
+		if isTagEndChar(byte) {
 			break
 		}
 
