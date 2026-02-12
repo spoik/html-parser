@@ -18,11 +18,14 @@ func TestSuccessfulParseHtml(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			"<a href>",
+			"<a href=\"https://example.com\">",
 			&[]*html.Tag{{
 				Type: "a",
 				Attributes: []*html.Attribute{
-					{Name: "href"},
+					{
+						Name: "href",
+						Value: "https://example.com",
+					},
 				},
 			}},
 		},
@@ -54,6 +57,45 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			&[]*html.Tag{
 				{
 					Type:       "div",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
+		},
+		{
+			"<img src><hr data>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
+					Attributes: []*html.Attribute{{Name: "src"}},
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute{{Name: "data"}},
+				},
+			},
+		},
+		{
+			"<img src/><hr data/>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
+					Attributes: []*html.Attribute{{Name: "src"}},
+				},
+				{
+					Type:       "hr",
+					Attributes: []*html.Attribute{{Name: "data"}},
+				},
+			},
+		},
+		{
+			"<img/><hr/>",
+			&[]*html.Tag{
+				{
+					Type:       "img",
 					Attributes: []*html.Attribute(nil),
 				},
 				{
