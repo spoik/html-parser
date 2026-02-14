@@ -29,7 +29,9 @@ func ParseHtml(htmlStr *string) (*[]*html.Tag, error) {
 	}
 
 	if err := checkErr(); err != nil {
-		return nil, fmt.Errorf("Error parsing HTML: %w", err)
+		if !errors.Is(err, io.EOF) {
+			return nil, fmt.Errorf("Error parsing HTML: %w", err)
+		}
 	}
 
 	tags = slices.DeleteFunc(tags, func(t *html.Tag) bool {
@@ -49,19 +51,11 @@ func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
 
 	seq := func(yield func(*html.Tag) bool) {
 		for {
-			byte, e := r.ReadByte()
+			e := seekToNextTag(r)
 
 			if e != nil {
-				if errors.Is(e, io.EOF) {
-					break
-				}
-
 				err = e
-				break
-			}
-
-			if byte != '<' {
-				continue
+				return
 			}
 
 			tag, e := ParseTag(r)
@@ -78,4 +72,18 @@ func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
 	}
 
 	return seq, func() error { return err }
+}
+
+func seekToNextTag(r *bufio.Reader) error {
+	for {
+		byte, err := r.ReadByte()
+
+		if err != nil {
+			return err
+		}
+
+		if byte != '<' {
+			continue
+		}
+	}
 }
