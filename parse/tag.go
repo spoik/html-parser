@@ -23,38 +23,6 @@ func isAttributeDeliminer(b byte) bool {
 	return b == attributeDeliminer
 }
 
-func ParseTags(r *bufio.Reader) ([]*html.Tag, error) {
-	// TODO: Change this slice to have a fixed size to avoid constantly resizing the slice.
-	// Not sure what the best size would be though: make([]*html.Tag, 50)
-	var tags []*html.Tag
-
-	for {
-		byte, err := r.ReadByte()
-
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-
-			return nil, err
-		}
-
-		if byte != '<' {
-			continue
-		}
-
-		tag, err := ParseTag(r)
-
-		if err != nil {
-			return nil, err
-		}
-
-		tags = append(tags, tag)
-	}
-
-	return tags, nil
-}
-
 func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 	tagType, err := parseTagType(r)
 

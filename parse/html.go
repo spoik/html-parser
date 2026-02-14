@@ -2,7 +2,9 @@ package parse
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/spoik/html-parser/html"
 	"github.com/spoik/html-parser/stringreader"
@@ -15,8 +17,7 @@ func ParseHtml(s *string) ([]*html.Tag, error) {
 		2,
 	)
 
-
-	tags, err := ParseTags(r)
+	tags, err := parseTags(r)
 
 	if err != nil {
 		return nil, fmt.Errorf("Error parsing HTML: %w", err)
@@ -24,6 +25,38 @@ func ParseHtml(s *string) ([]*html.Tag, error) {
 
 	if len(tags) == 0 {
 		return nil, fmt.Errorf("No HTML tags found in \"%s\"", *s)
+	}
+
+	return tags, nil
+}
+
+func parseTags(r *bufio.Reader) ([]*html.Tag, error) {
+	// TODO: Change this slice to have a fixed size to avoid constantly resizing the slice.
+	// Not sure what the best size would be though: make([]*html.Tag, 50)
+	var tags []*html.Tag
+
+	for {
+		byte, err := r.ReadByte()
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return nil, err
+		}
+
+		if byte != '<' {
+			continue
+		}
+
+		tag, err := ParseTag(r)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, tag)
 	}
 
 	return tags, nil
