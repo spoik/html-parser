@@ -11,20 +11,25 @@ import (
 	"github.com/spoik/html-parser/html"
 )
 
-var tagEndChars = []byte{'>', '/'}
+var tagEndBytes = []byte{'>', '/'}
 
-func isTagEndChar(byte byte) bool {
-	return slices.Contains(tagEndChars, byte)
+func isTagEndChar(b byte) bool {
+	return slices.Contains(tagEndBytes, b)
 }
 
-func ParseTag(r *bufio.Reader) (*html.Tag, error) {
-	var tagType strings.Builder
-	var attributes []*html.Attribute
+var attributeDeliminer byte = ' '
 
-	bytes := make([]byte, 1)
+func isAttributeDeliminer(b byte) bool {
+	return b == attributeDeliminer
+}
+
+func ParseTags(r *bufio.Reader) ([]*html.Tag, error) {
+	// TODO: Change this slice to have a fixed size to avoid constantly resizing the slice.
+	// Not sure what the best size would be though: make([]*html.Tag, 50)
+	var tags []*html.Tag
 
 	for {
-		_, err := r.Read(bytes)
+		byte, err := r.ReadByte()
 
 		if err != nil {
 			if errors.Is(err, io.EOF) {
@@ -34,33 +39,97 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 			return nil, err
 		}
 
-		byte := bytes[0]
-
-		if isTagEndChar(byte) {
-			break
-		}
-
-		if byte == ' ' {
-			attributes, err = parseAttributes(r)
-
-			if err != nil {
-				return nil, err
-			}
-
+		if byte != '<' {
 			continue
 		}
 
-		tagType.WriteByte(byte)
+		tag, err := ParseTag(r)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tags = append(tags, tag)
 	}
 
-	if tagType.Len() == 0 {
-		return nil, fmt.Errorf("Unable to find tag.")
+	return tags, nil
+}
+
+func ParseTag(r *bufio.Reader) (*html.Tag, error) {
+	tagType, err := parseTagType(r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	attributes, err := getAttributes(r)
+
+	if err != nil {
+		return nil, err
 	}
 
 	tag := &html.Tag{
-		Type:       tagType.String(),
+		Type:       tagType,
 		Attributes: attributes,
 	}
 
 	return tag, nil
+}
+
+func parseTagType(r *bufio.Reader) (string, error) {
+	var typeBuilder strings.Builder
+
+	for {
+		bytes, err := r.Peek(1)
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return "", err
+		}
+
+		byte := bytes[0]
+
+		if isTagEndChar(byte) || isAttributeDeliminer(byte) {
+			break
+		}
+
+		r.Discard(1)
+
+		err = typeBuilder.WriteByte(byte)
+
+		if err != nil {
+			return "", err
+		}
+	}
+
+	if typeBuilder.Len() == 0 {
+		return "", fmt.Errorf("Unable to find tag.")
+	}
+
+	return typeBuilder.String(), nil
+}
+
+func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
+	var attributes []*html.Attribute
+
+	bytes, err := r.Peek(1)
+
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return attributes, nil
+		}
+
+		return nil, err
+	}
+
+	byte := bytes[0]
+
+	if !isAttributeDeliminer(byte) {
+		return attributes, nil
+	}
+
+	return parseAttributes(r)
 }

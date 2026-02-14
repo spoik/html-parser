@@ -3,6 +3,7 @@ package parse
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"slices"
 	"strings"
@@ -57,8 +58,27 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 }
 
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
+	attributeName, err := parseAttributeName(r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	value, err := parseValue(r)
+
+	if err != nil {
+		return nil, err
+	}
+
+	attribute := &html.Attribute{
+		Name:  attributeName,
+		Value: value,
+	}
+	return attribute, nil
+}
+
+func parseAttributeName(r *bufio.Reader) (string, error) {
 	var attributeName strings.Builder
-	var value string
 
 	for {
 		bytes, err := r.Peek(1)
@@ -68,24 +88,12 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 				break
 			}
 
-			return nil, err
+			return "", err
 		}
 
 		byte := bytes[0]
 
 		if byte == '=' {
-			_, err = r.Discard(1)
-
-			if err != nil {
-				return nil, err
-			}
-
-			value, err = parseValue(r)
-
-			if err != nil {
-				return nil, err
-			}
-
 			break
 		}
 
@@ -96,16 +104,45 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 		_, err = r.Discard(1)
 
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 
-		attributeName.WriteByte(byte)
+		err = attributeName.WriteByte(byte)
+
+		if err != nil {
+			return "", err
+		}
 	}
 
-	attribute := &html.Attribute{
-		Name:  attributeName.String(),
-		Value: value,
+	if attributeName.Len() == 0 {
+		return "", fmt.Errorf("Unable to find attribute")
 	}
 
-	return attribute, nil
+	return attributeName.String(), nil
+}
+
+func parseValue(r *bufio.Reader) (string, error) {
+	bytes, err := r.Peek(1)
+
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return "", nil
+		}
+
+		return "", err
+	}
+
+	byte := bytes[0]
+
+	if byte != '=' {
+		return "", nil
+	}
+
+	_, err = r.Discard(1)
+
+	if err != nil {
+		return "", err
+	}
+
+	return parseAttributeValue(r)
 }

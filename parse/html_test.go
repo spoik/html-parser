@@ -13,13 +13,13 @@ import (
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html         string
-		expectedTags *[]*html.Tag
+		expectedTags []*html.Tag
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			&[]*html.Tag{{
+			[]*html.Tag{{
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
@@ -31,21 +31,21 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<html>",
-			&[]*html.Tag{{
+			[]*html.Tag{{
 				Type:       "html",
 				Attributes: []*html.Attribute(nil),
 			}},
 		},
 		{
 			"<hr/>",
-			&[]*html.Tag{{
+			[]*html.Tag{{
 				Type:       "hr",
 				Attributes: []*html.Attribute(nil),
 			}},
 		},
 		{
 			"<hr",
-			&[]*html.Tag{
+			[]*html.Tag{
 				{
 					Type:       "hr",
 					Attributes: []*html.Attribute(nil),
@@ -54,7 +54,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div><hr>",
-			&[]*html.Tag{
+			[]*html.Tag{
 				{
 					Type:       "div",
 					Attributes: []*html.Attribute(nil),
@@ -67,7 +67,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<img src><hr data>",
-			&[]*html.Tag{
+			[]*html.Tag{
 				{
 					Type:       "img",
 					Attributes: []*html.Attribute{{Name: "src"}},
@@ -80,7 +80,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<img src/><hr data/>",
-			&[]*html.Tag{
+			[]*html.Tag{
 				{
 					Type:       "img",
 					Attributes: []*html.Attribute{{Name: "src"}},
@@ -93,7 +93,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<img/><hr/>",
-			&[]*html.Tag{
+			[]*html.Tag{
 				{
 					Type:       "img",
 					Attributes: []*html.Attribute(nil),
@@ -130,11 +130,11 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"Example",
-			"No HTML found in \"Example\"",
+			"No HTML tags found in \"Example\"",
 		},
 		{
 			"",
-			"No HTML found in \"\"",
+			"No HTML tags found in \"\"",
 		},
 	}
 
