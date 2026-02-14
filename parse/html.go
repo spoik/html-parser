@@ -18,7 +18,7 @@ func ParseHtml(s *string) ([]*html.Tag, error) {
 		2,
 	)
 
-	nextTag, checkErr := tagIterator(r)
+	nextTag, checkErr := tagSeq(r)
 
 	// TODO: Change this slice to have a fixed size to avoid constantly resizing the slice.
 	// Not sure what the best size would be though: make([]*html.Tag, 50)
@@ -42,7 +42,7 @@ func ParseHtml(s *string) ([]*html.Tag, error) {
 // Returns an iterator that returns each tag present in the reader's text and an closure that
 // returns any errors that occurred. The error closure should be checked before using the values
 // returned by the iterator.
-func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
+func tagSeq(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
 	var err error
 
 	seq := func(yield func(*html.Tag) bool) {

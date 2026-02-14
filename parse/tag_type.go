@@ -12,7 +12,7 @@ import (
 func getTagType(r *bufio.Reader) (string, error) {
 	var typeBuilder strings.Builder
 
-	nextByte, checkErr := tagTypeIterator(r)
+	nextByte, checkErr := tagTypeSeq(r)
 
 	for byte := range nextByte {
 		typeBuilder.WriteByte(byte)
@@ -29,7 +29,7 @@ func getTagType(r *bufio.Reader) (string, error) {
 	return typeBuilder.String(), nil
 }
 
-func tagTypeIterator(r *bufio.Reader) (iter.Seq[byte], func() error) {
+func tagTypeSeq(r *bufio.Reader) (iter.Seq[byte], func() error) {
 	var err error
 
 	seq := func(yield func(byte) bool) {

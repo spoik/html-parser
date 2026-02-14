@@ -3,7 +3,9 @@ package parse
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
+	"iter"
 	"slices"
 	"strings"
 
@@ -57,55 +59,97 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 }
 
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
-	var attributeName strings.Builder
+	nextByte, checkErr := attributeNameSeq(r)
+
+	var attributeNameBuilder strings.Builder
+
+	for byte := range nextByte {
+		attributeNameBuilder.WriteByte(byte)
+	}
+
+	if attributeNameBuilder.Len() == 0 {
+		return nil, fmt.Errorf("Unable to find attribute")
+	}
+
+	err := checkErr()
+
+	if err != nil {
+		return nil, err
+	}
+
+	attribute := &html.Attribute{Name: attributeNameBuilder.String()}
+
+	bytes, err := r.Peek(1)
+
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return attribute, nil
+		}
+
+		return nil, err
+	}
+
+	byte := bytes[0]
+
 	var value string
 
-	for {
-		bytes, err := r.Peek(1)
+	if byte == '=' {
+		_, err := r.Discard(1)
 
 		if err != nil {
-			if errors.Is(err, io.EOF) {
+			return nil, err
+		}
+
+		value, err = parseValue(r)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	attribute.Value = value
+
+	return attribute, nil
+}
+
+func attributeNameSeq(r *bufio.Reader) (iter.Seq[byte], func() error) {
+	var err error
+
+	seq := func(yield func(byte) bool) {
+		for {
+			bytes, e := r.Peek(1)
+
+			if e != nil {
+				if errors.Is(e, io.EOF) {
+					break
+				}
+
+				e = err
 				break
 			}
 
-			return nil, err
-		}
+			byte := bytes[0]
 
-		byte := bytes[0]
-
-		if byte == '=' {
-			_, err = r.Discard(1)
-
-			if err != nil {
-				return nil, err
+			if byte == '=' {
+				break
 			}
 
-			value, err = parseValue(r)
-
-			if err != nil {
-				return nil, err
+			if isTagEndChar(byte) || isAttrNameEndChar(byte) {
+				break
 			}
 
-			break
+			_, e = r.Discard(1)
+
+			if e != nil {
+				err = e
+				break
+			}
+
+			if !yield(byte) {
+				break
+			}
 		}
-
-		if isTagEndChar(byte) || isAttrNameEndChar(byte) {
-			break
-		}
-
-		_, err = r.Discard(1)
-
-		if err != nil {
-			return nil, err
-		}
-
-		attributeName.WriteByte(byte)
 	}
 
-	attribute := &html.Attribute{
-		Name:  attributeName.String(),
-		Value: value,
-	}
-
-	return attribute, nil
+	return seq, func() error { return err }
 }
