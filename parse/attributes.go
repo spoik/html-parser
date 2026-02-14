@@ -69,6 +69,10 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 		return nil, err
 	}
 
+	if attributeName == "" {
+		return nil, err
+	}
+
 	value, err := parseValue(r)
 
 	if err != nil {

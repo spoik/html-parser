@@ -104,6 +104,35 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				},
 			},
 		},
+		{
+			"<div><p>Paragraph text",
+			[]*html.Tag{
+				{
+					Type:       "div",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "p",
+					Text:       "Paragraph text",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
+		},
+		{
+			"<div>Div text<p>Paragraph text",
+			[]*html.Tag{
+				{
+					Type:       "div",
+					Text:       "Div text",
+					Attributes: []*html.Attribute(nil),
+				},
+				{
+					Type:       "p",
+					Text:       "Paragraph text",
+					Attributes: []*html.Attribute(nil),
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

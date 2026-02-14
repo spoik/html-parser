@@ -36,8 +36,15 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 		return nil, err
 	}
 
+	text, err := getText(r)
+
+	if err != nil {
+		return nil, err
+	}
+
 	tag := &html.Tag{
 		Type:       tagType,
+		Text:       text,
 		Attributes: attributes,
 	}
 

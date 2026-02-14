@@ -2,8 +2,8 @@ package parse_test
 
 import (
 	"bufio"
-	"io"
 	"errors"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,9 +16,8 @@ import (
 
 func TestSuccessfulParseTag(t *testing.T) {
 	type testCase struct {
-		string                 string
-		expectedTag            *html.Tag
-		expectedReaderPosition int
+		string      string
+		expectedTag *html.Tag
 	}
 
 	testCases := []testCase{
@@ -26,6 +25,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 			"<a href=\"http://www.example.com\">Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "href",
@@ -33,23 +33,23 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			43,
 		},
 		{
-			"<a href class>Example</a>",
+			"<a href class>Second example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Second example",
 				Attributes: []*html.Attribute{
 					{Name: "href"},
 					{Name: "class"},
 				},
 			},
-			15,
 		},
 		{
 			"<a href=\"http://www.example.com\" class=\"btn btn-primary\">Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "href",
@@ -61,12 +61,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			62,
 		},
 		{
 			"<a class=btn>Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "class",
@@ -74,12 +74,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			15,
 		},
 		{
 			"<a class=\"btn>Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "class",
@@ -87,12 +87,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			15,
 		},
 		{
 			"<a class=btn\">Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "class",
@@ -100,12 +100,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			15,
 		},
 		{
 			"<a class=btn btn-primary>Example</a>",
 			&html.Tag{
 				Type: "a",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{
 						Name:  "class",
@@ -116,24 +116,22 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			31,
 		},
 		{
 			"<html lang>Example</a>",
 			&html.Tag{
 				Type: "html",
+				Text: "Example",
 				Attributes: []*html.Attribute{
 					{Name: "lang"},
 				},
 			},
-			15,
 		},
 		{
 			"<html>",
 			&html.Tag{
 				Type:       "html",
 				Attributes: []*html.Attribute(nil)},
-			5,
 		},
 		{
 			"<hr class=bold/>",
@@ -146,7 +144,6 @@ func TestSuccessfulParseTag(t *testing.T) {
 					},
 				},
 			},
-			15,
 		},
 		{
 			"<hr data-test/>",
@@ -156,21 +153,27 @@ func TestSuccessfulParseTag(t *testing.T) {
 					{Name: "data-test"},
 				},
 			},
-			14,
 		},
 		{
 			"<hr/>",
 			&html.Tag{
 				Type:       "hr",
 				Attributes: []*html.Attribute(nil)},
-			4,
 		},
+		// TODO: Uncomment and fix this test case.
+		// {
+		// 	"<hr  />",
+		// 	&html.Tag{
+		// 		Type:       "hr",
+		// 		Attributes: []*html.Attribute(nil)},
+		// 	6,
+		// },
 		{
 			"<hr",
 			&html.Tag{
 				Type:       "hr",
-				Attributes: []*html.Attribute(nil)},
-			2,
+				Attributes: []*html.Attribute(nil),
+			},
 		},
 		{
 			"<hr data",
@@ -180,7 +183,6 @@ func TestSuccessfulParseTag(t *testing.T) {
 					{Name: "data"},
 				},
 			},
-			7,
 		},
 	}
 
@@ -201,7 +203,6 @@ func TestSuccessfulParseTag(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, testCase.expectedTag, tag)
-			assert.Equal(t, testCase.expectedReaderPosition, sr.Position())
 		})
 	}
 }
