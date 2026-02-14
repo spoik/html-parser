@@ -3,8 +3,10 @@ package parse
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"slices"
+	"strings"
 
 	"github.com/spoik/html-parser/html"
 )
@@ -22,7 +24,7 @@ func isAttributeDeliminer(b byte) bool {
 }
 
 func ParseTag(r *bufio.Reader) (*html.Tag, error) {
-	tagType, err := getTagType(r)
+	tagType, err := parseTagType(r)
 
 	if err != nil {
 		return nil, err
@@ -40,6 +42,42 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 	}
 
 	return tag, nil
+}
+
+func parseTagType(r *bufio.Reader) (string, error) {
+	var typeBuilder strings.Builder
+
+	for {
+		bytes, err := r.Peek(1)
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return "", err
+		}
+
+		byte := bytes[0]
+
+		if isTagEndChar(byte) || isAttributeDeliminer(byte) {
+			break
+		}
+
+		r.Discard(1)
+
+		err = typeBuilder.WriteByte(byte)
+
+		if err != nil {
+			return "", err
+		}
+	}
+
+	if typeBuilder.Len() == 0 {
+		return "", fmt.Errorf("Unable to find tag.")
+	}
+
+	return typeBuilder.String(), nil
 }
 
 func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
