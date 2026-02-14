@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"io"
 	"iter"
-	"slices"
 
 	"github.com/spoik/html-parser/html"
 	"github.com/spoik/html-parser/stringreader"
 )
 
-func ParseHtml(htmlStr *string) (*[]*html.Tag, error) {
+func ParseHtml(htmlStr *string) ([]*html.Tag, error) {
 	r := bufio.NewReaderSize(
 		stringreader.New(*htmlStr),
 		2,
@@ -25,6 +24,7 @@ func ParseHtml(htmlStr *string) (*[]*html.Tag, error) {
 	var tags []*html.Tag
 
 	for tag := range nextTag {
+		println("Found tag:", tag)
 		tags = append(tags, tag)
 	}
 
@@ -34,16 +34,11 @@ func ParseHtml(htmlStr *string) (*[]*html.Tag, error) {
 		}
 	}
 
-	tags = slices.DeleteFunc(tags, func(t *html.Tag) bool {
-		fmt.Printf("Delete")
-		return t == nil
-	})
-
 	if len(tags) == 0 {
 		return nil, fmt.Errorf("No HTML found in \"%s\"", *htmlStr)
 	}
 
-	return &tags, nil
+	return tags, nil
 }
 
 func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
@@ -51,11 +46,11 @@ func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
 
 	seq := func(yield func(*html.Tag) bool) {
 		for {
-			e := seekToNextTag(r)
+			e := seekToTag(r)
 
 			if e != nil {
 				err = e
-				return
+				break
 			}
 
 			tag, e := ParseTag(r)
@@ -74,7 +69,7 @@ func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
 	return seq, func() error { return err }
 }
 
-func seekToNextTag(r *bufio.Reader) error {
+func seekToTag(r *bufio.Reader) error {
 	for {
 		byte, err := r.ReadByte()
 
@@ -82,8 +77,8 @@ func seekToNextTag(r *bufio.Reader) error {
 			return err
 		}
 
-		if byte != '<' {
-			continue
+		if byte == '<' {
+			return nil
 		}
 	}
 }
