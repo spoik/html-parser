@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"iter"
+	"slices"
 
 	"github.com/spoik/html-parser/html"
 	"github.com/spoik/html-parser/stringreader"
@@ -16,38 +18,64 @@ func ParseHtml(htmlStr *string) (*[]*html.Tag, error) {
 		2,
 	)
 
+	nextTag, checkErr := tagIterator(r)
+
+	// TODO: Change this slice to have a fixed size to avoid constantly resizing the slice.
+	// Not sure what the best size would be though: make([]*html.Tag, 50)
 	var tags []*html.Tag
-	bytes := make([]byte, 1)
 
-	for {
-		_, err := r.Read(bytes)
-
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-
-			return nil, err
-		}
-
-		char := bytes[0]
-
-		if char != '<' {
-			continue
-		}
-
-		tag, err := ParseTag(r)
-
-		if err != nil {
-			return nil, err
-		}
-
+	for tag := range nextTag {
 		tags = append(tags, tag)
 	}
+
+	if err := checkErr(); err != nil {
+		return nil, fmt.Errorf("Error parsing HTML: %w", err)
+	}
+
+	tags = slices.DeleteFunc(tags, func(t *html.Tag) bool {
+		fmt.Printf("Delete")
+		return t == nil
+	})
 
 	if len(tags) == 0 {
 		return nil, fmt.Errorf("No HTML found in \"%s\"", *htmlStr)
 	}
 
 	return &tags, nil
+}
+
+func tagIterator(r *bufio.Reader) (iter.Seq[*html.Tag], func() error) {
+	var err error
+
+	seq := func(yield func(*html.Tag) bool) {
+		for {
+			byte, e := r.ReadByte()
+
+			if e != nil {
+				if errors.Is(e, io.EOF) {
+					break
+				}
+
+				err = e
+				break
+			}
+
+			if byte != '<' {
+				continue
+			}
+
+			tag, e := ParseTag(r)
+
+			if e != nil {
+				err = e
+				break
+			}
+
+			if !yield(tag) {
+				break
+			}
+		}
+	}
+
+	return seq, func() error { return err }
 }

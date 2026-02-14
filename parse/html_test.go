@@ -126,7 +126,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<>",
-			"Unable to find tag.",
+			"Error parsing HTML: Unable to find tag.",
 		},
 		{
 			"Example",
