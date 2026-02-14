@@ -130,11 +130,11 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"Example",
-			"No HTML found in \"Example\"",
+			"No HTML tags found in \"Example\"",
 		},
 		{
 			"",
-			"No HTML found in \"\"",
+			"No HTML tags found in \"\"",
 		},
 	}
 
