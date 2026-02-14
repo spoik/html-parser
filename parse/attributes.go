@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"iter"
 	"slices"
 	"strings"
 
@@ -59,25 +58,17 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 }
 
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
-	nextByte, checkErr := attributeNameSeq(r)
-
-	var attributeNameBuilder strings.Builder
-
-	for byte := range nextByte {
-		attributeNameBuilder.WriteByte(byte)
-	}
-
-	if attributeNameBuilder.Len() == 0 {
-		return nil, fmt.Errorf("Unable to find attribute")
-	}
-
-	err := checkErr()
+	attributeName, err := parseAttributeName(r)
 
 	if err != nil {
 		return nil, err
 	}
 
-	attribute := &html.Attribute{Name: attributeNameBuilder.String()}
+	if len(attributeName) == 0 {
+		return nil, fmt.Errorf("Unable to find attribute")
+	}
+
+	attribute := &html.Attribute{Name: attributeName}
 
 	bytes, err := r.Peek(1)
 
@@ -100,7 +91,7 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 			return nil, err
 		}
 
-		value, err = parseValue(r)
+		value, err = parseAttributeValue(r)
 
 		if err != nil {
 			return nil, err
@@ -112,44 +103,42 @@ func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
 	return attribute, nil
 }
 
-func attributeNameSeq(r *bufio.Reader) (iter.Seq[byte], func() error) {
-	var err error
+func parseAttributeName(r *bufio.Reader) (string, error) {
+	var attributeNameBuilder strings.Builder
 
-	seq := func(yield func(byte) bool) {
-		for {
-			bytes, e := r.Peek(1)
+	for {
+		bytes, err := r.Peek(1)
 
-			if e != nil {
-				if errors.Is(e, io.EOF) {
-					break
-				}
-
-				e = err
+		if err != nil {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 
-			byte := bytes[0]
+			return "", err
+		}
 
-			if byte == '=' {
-				break
-			}
+		byte := bytes[0]
 
-			if isTagEndChar(byte) || isAttrNameEndChar(byte) {
-				break
-			}
+		if byte == '=' {
+			break
+		}
 
-			_, e = r.Discard(1)
+		if isTagEndChar(byte) || isAttrNameEndChar(byte) {
+			break
+		}
 
-			if e != nil {
-				err = e
-				break
-			}
+		_, err = r.Discard(1)
 
-			if !yield(byte) {
-				break
-			}
+		if err != nil {
+			return "", err
+		}
+
+		err = attributeNameBuilder.WriteByte(byte)
+
+		if err != nil {
+			return "", err
 		}
 	}
 
-	return seq, func() error { return err }
+	return attributeNameBuilder.String(), nil
 }

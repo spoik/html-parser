@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func parseValue(r *bufio.Reader) (string, error) {
+func parseAttributeValue(r *bufio.Reader) (string, error) {
 	hasOpeningQuote, err := skipOpeningQuote(r)
 
 	if err != nil {
