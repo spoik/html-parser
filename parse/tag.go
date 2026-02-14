@@ -64,7 +64,11 @@ func parseTagType(r *bufio.Reader) (string, error) {
 			break
 		}
 
-		r.Discard(1)
+		_, err = r.Discard(1)
+
+		if err != nil {
+			return "", err
+		}
 
 		err = typeBuilder.WriteByte(byte)
 

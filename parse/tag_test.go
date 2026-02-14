@@ -2,6 +2,8 @@ package parse_test
 
 import (
 	"bufio"
+	"io"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +28,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "href",
+						Name:  "href",
 						Value: "http://www.example.com",
 					},
 				},
@@ -50,11 +52,11 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "href",
+						Name:  "href",
 						Value: "http://www.example.com",
 					},
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "btn btn-primary",
 					},
 				},
@@ -67,7 +69,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "btn",
 					},
 				},
@@ -80,7 +82,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "btn",
 					},
 				},
@@ -93,7 +95,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "btn",
 					},
 				},
@@ -106,7 +108,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "btn",
 					},
 					{
@@ -139,7 +141,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Type: "hr",
 				Attributes: []*html.Attribute{
 					{
-						Name: "class",
+						Name:  "class",
 						Value: "bold",
 					},
 				},
@@ -188,7 +190,11 @@ func TestSuccessfulParseTag(t *testing.T) {
 
 			sr := stringreader.New(testCase.string)
 			r := bufio.NewReaderSize(sr, 2)
-			r.Discard(1)
+			_, err := r.Discard(1)
+
+			if err != nil {
+				t.Fatalf("Error discarding byte: %v", err)
+			}
 
 			tag, err := parse.ParseTag(r)
 
@@ -218,9 +224,15 @@ func TestFailureParseTag(t *testing.T) {
 
 			sr := stringreader.New(testCase.string)
 			r := bufio.NewReaderSize(sr, 2)
-			r.Discard(1)
+			_, err := r.Discard(1)
 
-			_, err := parse.ParseTag(r)
+			if err != nil {
+				if !errors.Is(err, io.EOF) {
+					t.Fatalf("Error discarding byte: %v", err)
+				}
+			}
+
+			_, err = parse.ParseTag(r)
 
 			assert.EqualError(t, err, testCase.errorMessage)
 		})

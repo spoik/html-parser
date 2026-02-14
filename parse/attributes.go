@@ -37,7 +37,12 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 		}
 
 		if isAttrNameEndChar(byte) {
-			r.Discard(1)
+			_, err := r.Discard(1)
+
+			if err != nil {
+				return nil, err
+			}
+
 			continue
 		}
 
