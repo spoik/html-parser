@@ -7,30 +7,32 @@ import (
 	"strings"
 )
 
+var errNoText = errors.New("No text found in tag")
+
 func getText(r *bufio.Reader) (string, error) {
-	hasText, err := seekToText(r)
+	err := seekToText(r)
 
 	if err != nil {
+		if errors.Is(err, errNoText) {
+			return "", nil
+		}
+
 		return "", err
 	}
 
-	if hasText {
-		return readText(r)
-	}
-
-	return "", nil
+	return readText(r)
 }
 
-func seekToText(r *bufio.Reader) (hasText bool, err error) {
+func seekToText(r *bufio.Reader) error {
 	for {
 		bytes, err := r.Peek(1)
 
 		if err != nil {
 			if errors.Is(err, io.EOF) {
-				return false, nil
+				return errNoText
 			}
 
-			return false, err
+			return err
 		}
 
 		b := bytes[0]
@@ -39,7 +41,7 @@ func seekToText(r *bufio.Reader) (hasText bool, err error) {
 			_, err := r.Discard(1)
 
 			if err != nil {
-				return false, err
+				return err
 			}
 
 			continue
@@ -47,16 +49,16 @@ func seekToText(r *bufio.Reader) (hasText bool, err error) {
 
 		// If this is a self closing tag, there is no text to extract.
 		if b == '/' {
-			return false, nil
+			return errNoText
 		}
 
 		_, err = r.Discard(1)
 
 		if err != nil {
-			return false, err
+			return err
 		}
 
-		return true, nil
+		return nil
 	}
 }
 
