@@ -227,10 +227,8 @@ func TestFailureParseTag(t *testing.T) {
 			r := bufio.NewReaderSize(sr, 2)
 			_, err := r.Discard(1)
 
-			if err != nil {
-				if !errors.Is(err, io.EOF) {
-					t.Fatalf("Error discarding byte: %v", err)
-				}
+			if err != nil && !errors.Is(err, io.EOF) {
+				t.Fatalf("Error discarding byte: %v", err)
 			}
 
 			_, err = parse.ParseTag(r)

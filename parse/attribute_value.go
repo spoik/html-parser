@@ -19,11 +19,11 @@ func parseAttributeValue(r *bufio.Reader) (string, error) {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return "", err
 		}
 
@@ -74,11 +74,11 @@ func parseAttributeValue(r *bufio.Reader) (string, error) {
 func skipOpeningQuote(r *bufio.Reader) (bool, error) {
 	bytes, err := r.Peek(1)
 
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			return false, nil
-		}
+	if errors.Is(err, io.EOF) {
+		return false, nil
+	}
 
+	if err != nil {
 		return false, err
 	}
 
@@ -98,11 +98,11 @@ func skipOpeningQuote(r *bufio.Reader) (bool, error) {
 func nextTwoBytesAreSelfClosingTag(r *bufio.Reader) (bool, error) {
 	bytes, err := r.Peek(2)
 
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			return false, nil
-		}
+	if errors.Is(err, io.EOF) {
+		return false, nil
+	}
 
+	if err != nil {
 		return false, err
 	}
 

@@ -57,11 +57,11 @@ func parseTagType(r *bufio.Reader) (string, error) {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return "", err
 		}
 
@@ -96,11 +96,11 @@ func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 
 	bytes, err := r.Peek(1)
 
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			return attributes, nil
-		}
+	if errors.Is(err, io.EOF) {
+		return attributes, nil
+	}
 
+	if err != nil {
 		return nil, err
 	}
 

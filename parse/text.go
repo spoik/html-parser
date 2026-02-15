@@ -12,10 +12,11 @@ var errNoText = errors.New("No text found in tag")
 func getText(r *bufio.Reader) (string, error) {
 	err := seekToText(r)
 
+	if errors.Is(err, errNoText) {
+		return "", nil
+	}
+
 	if err != nil {
-		if errors.Is(err, errNoText) {
-			return "", nil
-		}
 
 		return "", err
 	}
@@ -27,11 +28,11 @@ func seekToText(r *bufio.Reader) error {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				return errNoText
-			}
+		if errors.Is(err, io.EOF) {
+			return errNoText
+		}
 
+		if err != nil {
 			return err
 		}
 
@@ -68,11 +69,11 @@ func readText(r *bufio.Reader) (string, error) {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return "", err
 		}
 

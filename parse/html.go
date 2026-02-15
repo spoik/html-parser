@@ -38,11 +38,11 @@ func parseTags(r *bufio.Reader) ([]*html.Tag, error) {
 	for {
 		byte, err := r.ReadByte()
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return nil, err
 		}
 

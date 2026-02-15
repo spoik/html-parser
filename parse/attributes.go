@@ -22,11 +22,11 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return nil, err
 		}
 
@@ -92,11 +92,11 @@ func parseAttributeName(r *bufio.Reader) (string, error) {
 	for {
 		bytes, err := r.Peek(1)
 
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
+		if err != nil {
 			return "", err
 		}
 
@@ -133,11 +133,11 @@ func parseAttributeName(r *bufio.Reader) (string, error) {
 func parseValue(r *bufio.Reader) (string, error) {
 	bytes, err := r.Peek(1)
 
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			return "", nil
-		}
+	if errors.Is(err, io.EOF) {
+		return "", nil
+	}
 
+	if err != nil {
 		return "", err
 	}
 
