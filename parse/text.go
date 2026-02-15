@@ -17,11 +17,10 @@ func getText(r *bufio.Reader) (string, error) {
 	}
 
 	if err != nil {
-
 		return "", err
 	}
 
-	return readText(r)
+	return readText(r, &strings.Builder{})
 }
 
 func seekToText(r *bufio.Reader) error {
@@ -61,38 +60,34 @@ func seekToText(r *bufio.Reader) error {
 	return nil
 }
 
-func readText(r *bufio.Reader) (string, error) {
-	var text strings.Builder
+func readText(r *bufio.Reader, builder *strings.Builder) (string, error) {
+	bytes, err := r.Peek(1)
 
-	for {
-		bytes, err := r.Peek(1)
-
-		if errors.Is(err, io.EOF) {
-			break
-		}
-
-		if err != nil {
-			return "", err
-		}
-
-		b := bytes[0]
-
-		if b == '<' {
-			break
-		}
-
-		_, err = r.Discard(1)
-
-		if err != nil {
-			return "", err
-		}
-
-		err = text.WriteByte(b)
-
-		if err != nil {
-			return "", err
-		}
+	if errors.Is(err, io.EOF) {
+		return builder.String(), nil
 	}
 
-	return text.String(), nil
+	if err != nil {
+		return "", err
+	}
+
+	b := bytes[0]
+
+	if b == '<' {
+		return builder.String(), nil
+	}
+
+	_, err = r.Discard(1)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = builder.WriteByte(b)
+
+	if err != nil {
+		return "", err
+	}
+
+	return readText(r, builder)
 }
