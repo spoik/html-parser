@@ -81,6 +81,10 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 		return a == nil
 	})
 
+	if len(attributes) == 0 {
+		return nil, nil
+	}
+
 	return attributes, nil
 }
 

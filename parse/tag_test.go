@@ -129,9 +129,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<html>",
-			&html.Tag{
-				Type:       "html",
-				Attributes: []*html.Attribute(nil)},
+			&html.Tag{Type: "html"},
 		},
 		{
 			"<hr class=bold/>",
@@ -156,24 +154,15 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<hr/>",
-			&html.Tag{
-				Type:       "hr",
-				Attributes: []*html.Attribute(nil)},
+			&html.Tag{Type: "hr"},
 		},
-		// TODO: Uncomment and fix this test case.
-		// {
-		// 	"<hr  />",
-		// 	&html.Tag{
-		// 		Type:       "hr",
-		// 		Attributes: []*html.Attribute(nil)},
-		// 	6,
-		// },
+		{
+			"<hr  />",
+			&html.Tag{Type: "hr"},
+		},
 		{
 			"<hr",
-			&html.Tag{
-				Type:       "hr",
-				Attributes: []*html.Attribute(nil),
-			},
+			&html.Tag{Type: "hr"},
 		},
 		{
 			"<hr data",
