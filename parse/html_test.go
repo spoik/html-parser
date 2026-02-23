@@ -23,7 +23,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				Type: "a",
 				Attributes: []*html.Attribute{
 					{
-						Name: "href",
+						Name:  "href",
 						Value: "https://example.com",
 					},
 				},
@@ -58,10 +58,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				{
 					Type:       "div",
 					Attributes: []*html.Attribute(nil),
-				},
-				{
-					Type:       "hr",
-					Attributes: []*html.Attribute(nil),
+					Tags: []*html.Tag{
+						{
+							Type:       "hr",
+							Attributes: []*html.Attribute(nil),
+						},
+					},
 				},
 			},
 		},
@@ -71,10 +73,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				{
 					Type:       "img",
 					Attributes: []*html.Attribute{{Name: "src"}},
-				},
-				{
-					Type:       "hr",
-					Attributes: []*html.Attribute{{Name: "data"}},
+					Tags: []*html.Tag{
+						{
+							Type:       "hr",
+							Attributes: []*html.Attribute{{Name: "data"}},
+						},
+					},
 				},
 			},
 		},
@@ -110,26 +114,47 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				{
 					Type:       "div",
 					Attributes: []*html.Attribute(nil),
-				},
-				{
-					Type:       "p",
-					Text:       "Paragraph text",
-					Attributes: []*html.Attribute(nil),
+					Tags: []*html.Tag{
+						{
+							Type:       "p",
+							Text:       "Paragraph text",
+							Attributes: []*html.Attribute(nil),
+						},
+					},
 				},
 			},
 		},
 		{
-			"<div>Div text<p>Paragraph text",
+			"<div>Div text<p>Paragraph text</p>",
 			[]*html.Tag{
 				{
 					Type:       "div",
 					Text:       "Div text",
 					Attributes: []*html.Attribute(nil),
+					Tags: []*html.Tag{
+						{
+							Type:       "p",
+							Text:       "Paragraph text",
+							Attributes: []*html.Attribute(nil),
+						},
+					},
 				},
+			},
+		},
+		{
+			"<div>Div text<p>Paragraph text</p></div>",
+			[]*html.Tag{
 				{
-					Type:       "p",
-					Text:       "Paragraph text",
+					Type:       "div",
+					Text:       "Div text",
 					Attributes: []*html.Attribute(nil),
+					Tags: []*html.Tag{
+						{
+							Type:       "p",
+							Text:       "Paragraph text",
+							Attributes: []*html.Attribute(nil),
+						},
+					},
 				},
 			},
 		},
@@ -164,6 +189,10 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 		{
 			"",
 			"No HTML tags found in \"\"",
+		},
+		{
+			"<a></p>",
+			"Error parsing HTML: End tag type does not matching opening tag type. Expected end tag type a, but got p",
 		},
 	}
 

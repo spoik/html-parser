@@ -9,4 +9,5 @@ type Tag struct {
 	Type       string
 	Attributes []*Attribute
 	Text       string
+	Tags       []*Tag
 }
