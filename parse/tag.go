@@ -164,28 +164,6 @@ func parseInternalTags(r *bufio.Reader) ([]*html.Tag, error) {
 	return childTags, nil
 }
 
-func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
-	var attributes []*html.Attribute
-
-	bytes, err := r.Peek(1)
-
-	if errors.Is(err, io.EOF) {
-		return attributes, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	byte := bytes[0]
-
-	if !isAttributeDeliminer(byte) {
-		return attributes, nil
-	}
-
-	return parseAttributes(r)
-}
-
 // Advance the bufio.Reader past the closing tag. This would advance the reader just past the
 // "&lt;/a&gt;" in "&lt;a&gt;text&lt;/a&gt;&lt;p&gt;" to the "&lt;" in "&lt;p&gt;".
 //

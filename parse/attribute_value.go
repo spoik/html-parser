@@ -7,6 +7,32 @@ import (
 	"strings"
 )
 
+func parseValue(r *bufio.Reader) (string, error) {
+	bytes, err := r.Peek(1)
+
+	if errors.Is(err, io.EOF) {
+		return "", nil
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	byte := bytes[0]
+
+	if byte != '=' {
+		return "", nil
+	}
+
+	_, err = r.Discard(1)
+
+	if err != nil {
+		return "", err
+	}
+
+	return parseAttributeValue(r)
+}
+
 func parseAttributeValue(r *bufio.Reader) (string, error) {
 	hasOpeningQuote, err := skipOpeningQuote(r)
 
