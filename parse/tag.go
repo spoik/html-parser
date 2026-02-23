@@ -42,7 +42,7 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 		return nil, err
 	}
 
-	tags, err := parseInternalTags(r)
+	internalTags, err := parseInternalTags(r)
 
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 		Type:       tagType,
 		Text:       text,
 		Attributes: attributes,
-		Tags:       tags,
+		Tags:       internalTags,
 	}
 
 	return tag, nil
@@ -105,37 +105,63 @@ func parseTagType(r *bufio.Reader) (string, error) {
 }
 
 func parseInternalTags(r *bufio.Reader) ([]*html.Tag, error) {
-	bytes, err := r.Peek(2)
+	// TODO: Initialize childTags with a starting size to
+	//minimize how often the slice is resized
+	var childTags []*html.Tag
 
-	if errors.Is(err, io.EOF) {
-		return nil, nil
+	for {
+		bytes, err := r.Peek(2)
+
+		if errors.Is(err, io.EOF) {
+			break
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		// If the next two bytes are a tag's closing tags, stop parsing internal tags.
+		// There are no more internal tags.
+		if string(bytes) == "</" {
+			break
+		}
+
+		// If the next two bytes are a tag's self closing bytes, stop parsing internal tags.
+		// There are no more internal tags.
+		if string(bytes) == "/>" {
+			break
+		}
+
+		// If the next byte is not "<", continue advancing the bufio.Reader to continue
+		// the search for internal tags.
+		if bytes[0] != '<' {
+			_, err = r.Discard(1)
+
+			if err != nil {
+				return nil, err
+			}
+
+			continue
+		}
+
+		// If the next byte is '<', this indicates the beginning of an internal tag. Discard
+		// the "<" and call ParseTag to parse the internal tag.
+		_, err = r.Discard(1)
+
+		if err != nil {
+			return nil, err
+		}
+
+		childTag, err := ParseTag(r)
+
+		if err != nil {
+			return nil, err
+		}
+
+		childTags = append(childTags, childTag)
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	if string(bytes) == "</" {
-		return nil, nil
-	}
-
-	if bytes[0] != '<' {
-		return nil, nil
-	}
-
-	_, err = r.Discard(1)
-
-	if err != nil {
-		return nil, err
-	}
-
-	childTag, err := ParseTag(r)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return []*html.Tag{childTag}, nil
+	return childTags, nil
 }
 
 func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
@@ -224,7 +250,6 @@ func parseClosingTag(tagType string, r *bufio.Reader) error {
 	endTagType := string(endTagTypeBytes)
 
 	if endTagType != tagType {
-		fmt.Println("end tag type", endTagType, tagType)
 		return fmt.Errorf(
 			"End tag type does not matching opening tag type. Expected end tag type %s, but got %s",
 			tagType,
