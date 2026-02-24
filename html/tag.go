@@ -21,3 +21,7 @@ func (t *Tag) FullText() string {
 
 	return b.String()
 }
+
+func (t *Tag) Attribute(name string) *Attribute {
+	return t.Attributes.Attribute(name)
+}

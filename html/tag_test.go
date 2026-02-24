@@ -97,3 +97,45 @@ func TestFullText(t *testing.T) {
 		})
 	}
 }
+
+func TestAttribute(t *testing.T) {
+	type testCase struct {
+		Name           string
+		Tag            *html.Tag
+		AttrName       string
+		ExpectedResult *html.Attribute
+	}
+
+	testCases := []testCase{
+		{
+			Name: "Attribute is present in the attirbutes.",
+			Tag: &html.Tag{
+				Attributes: html.NewAttributes([]*html.Attribute{
+					{Name: "id", Value: "profile"},
+				}),
+			},
+			AttrName:       "id",
+			ExpectedResult: &html.Attribute{Name: "id", Value: "profile"},
+		},
+		{
+			Name: "Attribute is not present in the attirbutes.",
+			Tag: &html.Tag{
+				Attributes: html.NewAttributes([]*html.Attribute{
+					{Name: "id", Value: "profile"},
+				}),
+			},
+			AttrName:       "class",
+			ExpectedResult: nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			result := testCase.Tag.Attribute(testCase.AttrName)
+
+			assert.Equal(t, testCase.ExpectedResult, result)
+		})
+	}
+}
