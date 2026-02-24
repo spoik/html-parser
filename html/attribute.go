@@ -23,3 +23,7 @@ func NewAttributes(atrs []*Attribute) *Attributes {
 
 	return &Attributes{attributes: attributes}
 }
+
+func (a Attributes) Attribute(name string) *Attribute {
+	return a.attributes[name]
+}
