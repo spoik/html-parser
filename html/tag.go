@@ -4,7 +4,7 @@ import "strings"
 
 type Tag struct {
 	Type       string
-	Attributes []*Attribute
+	Attributes *Attributes
 	Text       string
 	Tags       []*Tag
 }

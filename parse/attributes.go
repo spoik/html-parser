@@ -15,8 +15,8 @@ func isAttrNameEndChar(byte byte) bool {
 	return byte == ' '
 }
 
-func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
-	var attributes []*html.Attribute
+func getAttributes(r *bufio.Reader) (*html.Attributes, error) {
+	var attributes *html.Attributes
 
 	bytes, err := r.Peek(1)
 
@@ -37,7 +37,7 @@ func getAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 	return parseAttributes(r)
 }
 
-func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
+func parseAttributes(r *bufio.Reader) (*html.Attributes, error) {
 	// Make an educated guess that most html elements will have ~5 attributes
 	attributes := make([]*html.Attribute, 5)
 
@@ -85,7 +85,7 @@ func parseAttributes(r *bufio.Reader) ([]*html.Attribute, error) {
 		return nil, nil
 	}
 
-	return attributes, nil
+	return html.NewAttributes(attributes), nil
 }
 
 func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {

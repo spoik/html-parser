@@ -26,12 +26,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
-					{
-						Name:  "href",
-						Value: "http://www.example.com",
-					},
-				},
+				Attributes: html.NewAttributes([]*html.Attribute{{
+					Name:  "href",
+					Value: "http://www.example.com",
+				}}),
 			},
 		},
 		{
@@ -39,10 +37,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Second example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "href"},
 					{Name: "class"},
-				},
+				}),
 			},
 		},
 		{
@@ -50,7 +48,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "href",
 						Value: "http://www.example.com",
@@ -59,7 +57,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Name:  "class",
 						Value: "btn btn-primary",
 					},
-				},
+				}),
 			},
 		},
 		{
@@ -67,12 +65,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
 					},
-				},
+				}),
 			},
 		},
 		{
@@ -80,12 +78,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
 					},
-				},
+				}),
 			},
 		},
 		{
@@ -93,12 +91,12 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
 					},
-				},
+				}),
 			},
 		},
 		{
@@ -106,7 +104,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
@@ -114,7 +112,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 					{
 						Name: "btn-primary",
 					},
-				},
+				}),
 			},
 		},
 		{
@@ -122,9 +120,9 @@ func TestSuccessfulParseTag(t *testing.T) {
 			&html.Tag{
 				Type: "html",
 				Text: "Example",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "lang"},
-				},
+				}),
 			},
 		},
 		{
@@ -135,21 +133,21 @@ func TestSuccessfulParseTag(t *testing.T) {
 			"<hr class=bold/>",
 			&html.Tag{
 				Type: "hr",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{
 						Name:  "class",
 						Value: "bold",
 					},
-				},
+				}),
 			},
 		},
 		{
 			"<hr data-test/>",
 			&html.Tag{
 				Type: "hr",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "data-test"},
-				},
+				}),
 			},
 		},
 		{
@@ -168,9 +166,9 @@ func TestSuccessfulParseTag(t *testing.T) {
 			"<hr data",
 			&html.Tag{
 				Type: "hr",
-				Attributes: []*html.Attribute{
+				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "data"},
-				},
+				}),
 			},
 		},
 	}
