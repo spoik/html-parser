@@ -29,7 +29,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with no text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{{}},
+				Tags: html.NewTags(nil),
 			},
 			ExpectedString: "Hello",
 		},
@@ -37,7 +37,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{{Text: "World"}},
+				Tags: html.NewTags([]*html.Tag{{Text: "World"}}),
 			},
 			ExpectedString: "HelloWorld",
 		},
@@ -45,7 +45,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{{Text: " World"}},
+				Tags: html.NewTags([]*html.Tag{{Text: " World"}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -53,7 +53,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{{Text: " World"}},
+				Tags: html.NewTags([]*html.Tag{{Text: " World"}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -61,10 +61,12 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and multiple child tags",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{
-					{Text: "There"},
-					{Text: "World"},
-				},
+				Tags: html.NewTags(
+					[]*html.Tag{
+						{Text: "There"},
+						{Text: "World"},
+					},
+				),
 			},
 			ExpectedString: "HelloThereWorld",
 		},
@@ -72,16 +74,18 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and multiple child tags with their own child tags",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: []*html.Tag{
-					{
-						Text: "There",
-						Tags: []*html.Tag{{Text: "How"}},
+				Tags: html.NewTags(
+					[]*html.Tag{
+						{
+							Text: "There",
+							Tags: html.NewTags([]*html.Tag{{Text: "How"}}),
+						},
+						{
+							Text: "Are",
+							Tags: html.NewTags([]*html.Tag{{Text: "You"}}),
+						},
 					},
-					{
-						Text: "Are",
-						Tags: []*html.Tag{{Text: "You"}},
-					},
-				},
+				),
 			},
 			ExpectedString: "HelloThereHowAreYou",
 		},

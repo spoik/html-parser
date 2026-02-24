@@ -6,7 +6,7 @@ type Tag struct {
 	Type       string
 	Attributes *Attributes
 	Text       string
-	Tags       []*Tag
+	Tags       *Tags
 }
 
 // Returns the Tag's Text concatenated with all it's children's Text.
@@ -15,8 +15,10 @@ func (t *Tag) FullText() string {
 
 	b.WriteString(t.Text)
 
-	for _, tag := range t.Tags {
-		b.WriteString(tag.FullText())
+	if t.Tags != nil {
+		for _, tag := range t.Tags.Tags {
+			b.WriteString(tag.FullText())
+		}
 	}
 
 	return b.String()

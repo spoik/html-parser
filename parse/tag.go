@@ -104,7 +104,7 @@ func parseTagType(r *bufio.Reader) (string, error) {
 	return typeBuilder.String(), nil
 }
 
-func parseInternalTags(r *bufio.Reader) ([]*html.Tag, error) {
+func parseInternalTags(r *bufio.Reader) (*html.Tags, error) {
 	// TODO: Initialize childTags with a starting size to
 	//minimize how often the slice is resized
 	var childTags []*html.Tag
@@ -161,7 +161,7 @@ func parseInternalTags(r *bufio.Reader) ([]*html.Tag, error) {
 		childTags = append(childTags, childTag)
 	}
 
-	return childTags, nil
+	return html.NewTags(childTags), nil
 }
 
 // Advance the bufio.Reader past the closing tag. This would advance the reader just past the

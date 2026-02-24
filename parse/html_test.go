@@ -19,8 +19,8 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			&html.Tags{
-				Tags: []*html.Tag{{
+			html.NewTags(
+				[]*html.Tag{{
 					Type: "a",
 					Attributes: html.NewAttributes([]*html.Attribute{
 						{
@@ -29,60 +29,64 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						},
 					}),
 				}},
-			},
+			),
 		},
 		{
 			"<html>",
-			&html.Tags{
-				Tags: []*html.Tag{{Type: "html"}},
-			},
+			html.NewTags(
+				[]*html.Tag{{Type: "html"}},
+			),
 		},
 		{
 			"<hr/>",
-			&html.Tags{
-				Tags: []*html.Tag{{Type: "hr"}},
-			},
+			html.NewTags(
+				[]*html.Tag{{Type: "hr"}},
+			),
 		},
 		{
 			"<hr",
-			&html.Tags{
-				Tags: []*html.Tag{{Type: "hr"}},
-			},
+			html.NewTags(
+				[]*html.Tag{{Type: "hr"}},
+			),
 		},
 		{
 			"<div><hr>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
-						Tags: []*html.Tag{{Type: "hr"}},
+						Tags: html.NewTags(
+							[]*html.Tag{{Type: "hr"}},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<img src><hr data>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type:       "img",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
-						Tags: []*html.Tag{
-							{
-								Type: "hr",
-								Attributes: html.NewAttributes([]*html.Attribute{
-									{Name: "data"},
-								}),
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{
+									Type: "hr",
+									Attributes: html.NewAttributes([]*html.Attribute{
+										{Name: "data"},
+									}),
+								},
 							},
-						},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<img src/><hr data/>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type:       "img",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
@@ -92,100 +96,112 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "data"}}),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<img/><hr/>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{Type: "img"},
 					{Type: "hr"},
 				},
-			},
+			),
 		},
 		{
 			"<div><p>Paragraph text",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
-						Tags: []*html.Tag{
-							{
-								Type: "p",
-								Text: "Paragraph text",
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{
+									Type: "p",
+									Text: "Paragraph text",
+								},
 							},
-						},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
-						Tags: []*html.Tag{
-							{
-								Type: "p",
-								Text: "Paragraph text",
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{
+									Type: "p",
+									Text: "Paragraph text",
+								},
 							},
-						},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p></div>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
-						Tags: []*html.Tag{
-							{
-								Type: "p",
-								Text: "Paragraph text",
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{
+									Type: "p",
+									Text: "Paragraph text",
+								},
 							},
-						},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<div><p><a></a></p></div>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
-						Tags: []*html.Tag{
-							{
-								Type: "p",
-								Tags: []*html.Tag{
-									{
-										Type: "a",
-									},
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{
+									Type: "p",
+									Tags: html.NewTags(
+										[]*html.Tag{
+											{
+												Type: "a",
+											},
+										},
+									),
 								},
 							},
-						},
+						),
 					},
 				},
-			},
+			),
 		},
 		{
 			"<div><p></p><a></a></div>",
-			&html.Tags{
-				Tags: []*html.Tag{
+			html.NewTags(
+				[]*html.Tag{
 					{
 						Type: "div",
-						Tags: []*html.Tag{
-							{Type: "p"},
-							{Type: "a"},
-						},
+						Tags: html.NewTags(
+							[]*html.Tag{
+								{Type: "p"},
+								{Type: "a"},
+							},
+						),
 					},
 				},
-			},
+			),
 		},
 	}
 
