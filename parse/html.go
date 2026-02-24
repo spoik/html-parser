@@ -10,7 +10,7 @@ import (
 	"github.com/spoik/html-parser/stringreader"
 )
 
-// Returns a slice of html.Tag instances that represent the html provide in s.
+// Returns a html.Tags instances that represent the html provide in s.
 func ParseHtml(s *string) (*html.Tags, error) {
 	r := bufio.NewReaderSize(
 		stringreader.New(*s),

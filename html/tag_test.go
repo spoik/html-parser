@@ -143,3 +143,43 @@ func TestAttribute(t *testing.T) {
 		})
 	}
 }
+
+func TestFindTags(t *testing.T) {
+	type testCase struct {
+		Name           string
+		Tag            html.Tag
+		TagType        string
+		ExpectedResult []*html.Tag
+	}
+
+	testCases := []testCase{
+		{
+			Name:           "With no tags.",
+			Tag:            html.Tag{},
+			TagType:        "a",
+			ExpectedResult: []*html.Tag{},
+		},
+		{
+			Name: "With one matching tag.",
+			Tag: html.Tag{
+				Tags: html.NewTags([]*html.Tag{
+					{Type: "a"},
+				}),
+			},
+			TagType: "a",
+			ExpectedResult: []*html.Tag{
+				{Type: "a"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			result := testCase.Tag.FindTags(testCase.TagType)
+
+			assert.Equal(t, testCase.ExpectedResult, result)
+		})
+	}
+}

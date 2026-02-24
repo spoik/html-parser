@@ -27,3 +27,11 @@ func (t *Tag) FullText() string {
 func (t *Tag) Attribute(name string) *Attribute {
 	return t.Attributes.Attribute(name)
 }
+
+func (t *Tag) FindTags(tagType string) []*Tag {
+	if t.Tags == nil {
+		return []*Tag{}
+	}
+
+	return t.Tags.Find(tagType)
+}
