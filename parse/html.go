@@ -11,7 +11,7 @@ import (
 )
 
 // Returns a slice of html.Tag instances that represent the html provide in s.
-func ParseHtml(s *string) ([]*html.Tag, error) {
+func ParseHtml(s *string) (*html.Tags, error) {
 	r := bufio.NewReaderSize(
 		stringreader.New(*s),
 		2,
@@ -27,7 +27,7 @@ func ParseHtml(s *string) ([]*html.Tag, error) {
 		return nil, fmt.Errorf("No HTML tags found in \"%s\"", *s)
 	}
 
-	return tags, nil
+	return &html.Tags{Tags: tags}, nil
 }
 
 func parseTags(r *bufio.Reader) ([]*html.Tag, error) {

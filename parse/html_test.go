@@ -13,55 +13,67 @@ import (
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html         string
-		expectedTags []*html.Tag
+		expectedTags *html.Tags
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			[]*html.Tag{{
-				Type: "a",
-				Attributes: html.NewAttributes([]*html.Attribute{
-					{
-						Name:  "href",
-						Value: "https://example.com",
-					},
-				}),
-			}},
+			&html.Tags{
+				Tags: []*html.Tag{{
+					Type: "a",
+					Attributes: html.NewAttributes([]*html.Attribute{
+						{
+							Name:  "href",
+							Value: "https://example.com",
+						},
+					}),
+				}},
+			},
 		},
 		{
 			"<html>",
-			[]*html.Tag{{Type: "html"}},
+			&html.Tags{
+				Tags: []*html.Tag{{Type: "html"}},
+			},
 		},
 		{
 			"<hr/>",
-			[]*html.Tag{{Type: "hr"}},
+			&html.Tags{
+				Tags: []*html.Tag{{Type: "hr"}},
+			},
 		},
 		{
 			"<hr",
-			[]*html.Tag{{Type: "hr"}},
+			&html.Tags{
+				Tags: []*html.Tag{{Type: "hr"}},
+			},
 		},
 		{
 			"<div><hr>",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Tags: []*html.Tag{{Type: "hr"}},
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Tags: []*html.Tag{{Type: "hr"}},
+					},
 				},
 			},
 		},
 		{
 			"<img src><hr data>",
-			[]*html.Tag{
-				{
-					Type:       "img",
-					Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
-					Tags: []*html.Tag{
-						{
-							Type: "hr",
-							Attributes: html.NewAttributes([]*html.Attribute{
-								{Name: "data"},
-							}),
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type:       "img",
+						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
+						Tags: []*html.Tag{
+							{
+								Type: "hr",
+								Attributes: html.NewAttributes([]*html.Attribute{
+									{Name: "data"},
+								}),
+							},
 						},
 					},
 				},
@@ -69,33 +81,39 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<img src/><hr data/>",
-			[]*html.Tag{
-				{
-					Type:       "img",
-					Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
-				},
-				{
-					Type:       "hr",
-					Attributes: html.NewAttributes([]*html.Attribute{{Name: "data"}}),
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type:       "img",
+						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
+					},
+					{
+						Type:       "hr",
+						Attributes: html.NewAttributes([]*html.Attribute{{Name: "data"}}),
+					},
 				},
 			},
 		},
 		{
 			"<img/><hr/>",
-			[]*html.Tag{
-				{Type: "img"},
-				{Type: "hr"},
+			&html.Tags{
+				Tags: []*html.Tag{
+					{Type: "img"},
+					{Type: "hr"},
+				},
 			},
 		},
 		{
 			"<div><p>Paragraph text",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Tags: []*html.Tag{
-						{
-							Type: "p",
-							Text: "Paragraph text",
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Tags: []*html.Tag{
+							{
+								Type: "p",
+								Text: "Paragraph text",
+							},
 						},
 					},
 				},
@@ -103,14 +121,16 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div>Div text<p>Paragraph text</p>",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Text: "Div text",
-					Tags: []*html.Tag{
-						{
-							Type: "p",
-							Text: "Paragraph text",
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Text: "Div text",
+						Tags: []*html.Tag{
+							{
+								Type: "p",
+								Text: "Paragraph text",
+							},
 						},
 					},
 				},
@@ -118,14 +138,16 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div>Div text<p>Paragraph text</p></div>",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Text: "Div text",
-					Tags: []*html.Tag{
-						{
-							Type: "p",
-							Text: "Paragraph text",
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Text: "Div text",
+						Tags: []*html.Tag{
+							{
+								Type: "p",
+								Text: "Paragraph text",
+							},
 						},
 					},
 				},
@@ -133,15 +155,17 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div><p><a></a></p></div>",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Tags: []*html.Tag{
-						{
-							Type: "p",
-							Tags: []*html.Tag{
-								{
-									Type: "a",
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Tags: []*html.Tag{
+							{
+								Type: "p",
+								Tags: []*html.Tag{
+									{
+										Type: "a",
+									},
 								},
 							},
 						},
@@ -151,12 +175,14 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div><p></p><a></a></div>",
-			[]*html.Tag{
-				{
-					Type: "div",
-					Tags: []*html.Tag{
-						{Type: "p"},
-						{Type: "a"},
+			&html.Tags{
+				Tags: []*html.Tag{
+					{
+						Type: "div",
+						Tags: []*html.Tag{
+							{Type: "p"},
+							{Type: "a"},
+						},
 					},
 				},
 			},
