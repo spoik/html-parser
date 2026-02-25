@@ -26,12 +26,12 @@ func TestNewTags(t *testing.T) {
 				{Type: "a"},
 				{Type: "p"},
 			},
-			ExpectedResult: &html.Tags{
-				Tags: []*html.Tag{
+			ExpectedResult: html.NewTags(
+				[]*html.Tag{
 					{Type: "a"},
 					{Type: "p"},
 				},
-			},
+			),
 		},
 	}
 
@@ -162,9 +162,9 @@ func TestFindDoesNotModifyOriginalTags(t *testing.T) {
 		},
 	})
 
-	assert.Equal(t, 2, len(tags.Tags[0].Tags.Tags))
+	assert.Equal(t, 2, tags.Get(0).Tags.Length())
 	result := tags.Find("a")
-	assert.Equal(t, 2, len(tags.Tags[0].Tags.Tags))
+	assert.Equal(t, 2, tags.Get(0).Tags.Length())
 
 	expectedTags := []*html.Tag{
 		{Type: "a"},

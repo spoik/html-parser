@@ -27,7 +27,7 @@ func ParseHtml(s *string) (*html.Tags, error) {
 		return nil, fmt.Errorf("No HTML tags found in \"%s\"", *s)
 	}
 
-	return &html.Tags{Tags: tags}, nil
+	return html.NewTags(tags), nil
 }
 
 func parseTags(r *bufio.Reader) ([]*html.Tag, error) {

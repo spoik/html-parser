@@ -16,7 +16,7 @@ func (t *Tag) FullText() string {
 	b.WriteString(t.Text)
 
 	if t.Tags != nil {
-		for _, tag := range t.Tags.Tags {
+		for _, tag := range t.Tags.tags {
 			b.WriteString(tag.FullText())
 		}
 	}
