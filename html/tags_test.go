@@ -1,37 +1,36 @@
-package html_test
+package html
 
 import (
 	"testing"
 
-	"github.com/spoik/html-parser/html"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewTags(t *testing.T) {
 	type testCase struct {
 		Name           string
-		Tags           []*html.Tag
-		ExpectedResult *html.Tags
+		Tags           []*Tag
+		ExpectedResult *Tags
 	}
 
 	testCases := []testCase{
 		{
 			Name:           "Empty tag slice.",
-			Tags:           []*html.Tag{},
+			Tags:           []*Tag{},
 			ExpectedResult: nil,
 		},
 		{
 			Name: "Populated tag slice.",
-			Tags: []*html.Tag{
+			Tags: []*Tag{
 				{Type: "a"},
 				{Type: "p"},
 			},
-			ExpectedResult: html.NewTags(
-				[]*html.Tag{
+			ExpectedResult: &Tags{
+				tags: []*Tag{
 					{Type: "a"},
 					{Type: "p"},
 				},
-			),
+			},
 		},
 	}
 
@@ -39,7 +38,7 @@ func TestNewTags(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := html.NewTags(testCase.Tags)
+			result := NewTags(testCase.Tags)
 			assert.Equal(t, testCase.ExpectedResult, result)
 		})
 	}
@@ -48,52 +47,52 @@ func TestNewTags(t *testing.T) {
 func TestFind(t *testing.T) {
 	type testCase struct {
 		Name           string
-		Tags           html.Tags
+		Tags           Tags
 		TagType        string
-		ExpectedResult []*html.Tag
+		ExpectedResult []*Tag
 	}
 
 	testCases := []testCase{
 		{
 			Name:           "With no tags.",
-			Tags:           html.Tags{},
+			Tags:           Tags{},
 			TagType:        "a",
-			ExpectedResult: []*html.Tag{},
+			ExpectedResult: []*Tag{},
 		},
 		{
 			Name: "With one matching tag.",
-			Tags: *html.NewTags([]*html.Tag{
+			Tags: *NewTags([]*Tag{
 				{Type: "a"},
 				{Type: "p"},
 			}),
 			TagType: "a",
-			ExpectedResult: []*html.Tag{
+			ExpectedResult: []*Tag{
 				{Type: "a"},
 			},
 		},
 		{
 			Name: "With one matching tag, returns a copy with all attributes except Tags.",
-			Tags: *html.NewTags([]*html.Tag{
+			Tags: *NewTags([]*Tag{
 				{
 					Type: "a",
 					Text: "Text",
-					Attributes: html.NewAttributes([]*html.Attribute{
+					Attributes: NewAttributes([]*Attribute{
 						{
 							Name:  "Name",
 							Value: "Value",
 						},
 					}),
-					Tags: html.NewTags([]*html.Tag{
+					Tags: NewTags([]*Tag{
 						{Type: "p"},
 					}),
 				},
 			}),
 			TagType: "a",
-			ExpectedResult: []*html.Tag{
+			ExpectedResult: []*Tag{
 				{
 					Type: "a",
 					Text: "Text",
-					Attributes: html.NewAttributes([]*html.Attribute{
+					Attributes: NewAttributes([]*Attribute{
 						{
 							Name:  "Name",
 							Value: "Value",
@@ -104,26 +103,26 @@ func TestFind(t *testing.T) {
 		},
 		{
 			Name: "With multiple matching tag.",
-			Tags: *html.NewTags([]*html.Tag{
+			Tags: *NewTags([]*Tag{
 				{Type: "a"},
 				{Type: "a"},
 				{Type: "p"},
 			}),
 			TagType: "a",
-			ExpectedResult: []*html.Tag{
+			ExpectedResult: []*Tag{
 				{Type: "a"},
 				{Type: "a"},
 			},
 		},
 		{
 			Name: "With deep matching tags.",
-			Tags: *html.NewTags([]*html.Tag{
+			Tags: *NewTags([]*Tag{
 				{
 					Type: "a",
-					Tags: html.NewTags([]*html.Tag{
+					Tags: NewTags([]*Tag{
 						{
 							Type: "a",
-							Tags: html.NewTags([]*html.Tag{
+							Tags: NewTags([]*Tag{
 								{Type: "a"},
 							}),
 						},
@@ -132,7 +131,7 @@ func TestFind(t *testing.T) {
 				{Type: "p"},
 			}),
 			TagType: "a",
-			ExpectedResult: []*html.Tag{
+			ExpectedResult: []*Tag{
 				{Type: "a"},
 				{Type: "a"},
 				{Type: "a"},
@@ -152,22 +151,79 @@ func TestFind(t *testing.T) {
 }
 
 func TestFindDoesNotModifyOriginalTags(t *testing.T) {
-	tags := html.NewTags([]*html.Tag{
+	tags := NewTags([]*Tag{
 		{
 			Type: "a",
-			Tags: html.NewTags([]*html.Tag{
+			Tags: NewTags([]*Tag{
 				{Type: "p"},
 				{Type: "img"},
 			}),
 		},
 	})
 
-	assert.Equal(t, 2, tags.Get(0).Tags.Length())
-	result := tags.Find("a")
-	assert.Equal(t, 2, tags.Get(0).Tags.Length())
+	tag, err := tags.Get(0)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, tag.Tags.Length())
 
-	expectedTags := []*html.Tag{
+	result := tags.Find("a")
+
+	tag, err = tags.Get(0)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, tag.Tags.Length())
+
+	expectedTags := []*Tag{
 		{Type: "a"},
 	}
 	assert.Equal(t, expectedTags, result)
+}
+
+func TestGet(t *testing.T) {
+	type testCase struct {
+		Name           string
+		Tags           Tags
+		Index          int
+		ExpectedResult *Tag
+		ExpectedError  error
+	}
+
+	testCases := []testCase{
+		{
+			Name:           "Empty Tags.",
+			Tags:           Tags{},
+			Index:          0,
+			ExpectedResult: nil,
+			ExpectedError:  NoTagAtIndex,
+		},
+		{
+			Name:           "Out of bounds index.",
+			Tags:           *NewTags([]*Tag{{Type: "a"}}),
+			Index:          4,
+			ExpectedResult: nil,
+			ExpectedError:  NoTagAtIndex,
+		},
+		{
+			Name:           "Valid index.",
+			Tags:           *NewTags([]*Tag{{Type: "a"}}),
+			Index:          0,
+			ExpectedResult: &Tag{Type: "a"},
+			ExpectedError:  nil,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			result, err := testCase.Tags.Get(testCase.Index)
+
+			if testCase.ExpectedError == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, testCase.ExpectedResult, result)
+				return
+			}
+
+			assert.Error(t, err)
+			assert.ErrorIs(t, err, NoTagAtIndex)
+		})
+	}
 }

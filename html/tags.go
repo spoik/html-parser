@@ -1,6 +1,9 @@
 package html
 
-import "slices"
+import (
+	"errors"
+	"slices"
+)
 
 type Tags struct {
 	tags []*Tag
@@ -14,14 +17,19 @@ func NewTags(tags []*Tag) *Tags {
 	return &Tags{tags: tags}
 }
 
+var NoTagAtIndex = errors.New("No tag at index.")
+
 // Returns the tag at the given index. If there is no Tag at the index, nil is returned.
-func (t *Tags) Get(index int) *Tag {
-	if index > len(t.tags) {
-		// TODO: Return error instead.
-		return nil
+func (t *Tags) Get(index int) (*Tag, error) {
+	if t.tags == nil {
+		return nil, NoTagAtIndex
 	}
 
-	return t.tags[index]
+	if index > len(t.tags) {
+		return nil, NoTagAtIndex
+	}
+
+	return t.tags[index], nil
 }
 
 // Returns the number of Tags.

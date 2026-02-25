@@ -15,5 +15,11 @@ func main() {
 		return
 	}
 
-	fmt.Printf("%+v", tags.Get(0).Attribute("href").Value)
+	tag, err := tags.Get(0)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v", tag.Attribute("href").Value)
 }
