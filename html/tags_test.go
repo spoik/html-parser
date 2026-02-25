@@ -227,3 +227,44 @@ func TestGet(t *testing.T) {
 		})
 	}
 }
+
+func TestLength(t *testing.T) {
+	type testCase struct {
+		Name           string
+		Tags           Tags
+		ExpectedResult int
+	}
+
+	testCases := []testCase{
+		{
+			Name:           "Tags with nil tags slice.",
+			Tags:           Tags{},
+			ExpectedResult: 0,
+		},
+		{
+			Name:           "Tags with empty tags slice.",
+			Tags:           Tags{tags: []*Tag{}},
+			ExpectedResult: 0,
+		},
+		{
+			Name: "Tags with tags slice.",
+			Tags: Tags{
+				tags: []*Tag{
+					{Type: "a"},
+					{Type: "p"},
+					{Type: "img"},
+				},
+			},
+			ExpectedResult: 3,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			result := testCase.Tags.Length()
+			assert.Equal(t, testCase.ExpectedResult, result)
+		})
+	}
+}

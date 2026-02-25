@@ -25,7 +25,7 @@ func (t *Tags) Get(index int) (*Tag, error) {
 		return nil, NoTagAtIndex
 	}
 
-	if index > len(t.tags) {
+	if index > t.Length() {
 		return nil, NoTagAtIndex
 	}
 
