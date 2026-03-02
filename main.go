@@ -15,11 +15,8 @@ func main() {
 		return
 	}
 
-	tag, err := tags.Get(0)
+	aTags := tags.Find("im")
 
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%+v", tag.Attribute("href").Value)
+	fmt.Println(len(aTags))
+	fmt.Printf("%+v", aTags)
 }

@@ -28,25 +28,35 @@ func TestSuccessfulParseHtml(t *testing.T) {
 							Value: "https://example.com",
 						},
 					}),
+					Tags: html.EmptyTags(),
 				}},
 			),
 		},
 		{
 			"<html>",
 			html.NewTags(
-				[]*html.Tag{{Type: "html"}},
+				[]*html.Tag{{
+					Type: "html",
+					Tags: html.EmptyTags(),
+				}},
 			),
 		},
 		{
 			"<hr/>",
 			html.NewTags(
-				[]*html.Tag{{Type: "hr"}},
+				[]*html.Tag{{
+					Type: "hr",
+					Tags: html.EmptyTags(),
+				}},
 			),
 		},
 		{
 			"<hr",
 			html.NewTags(
-				[]*html.Tag{{Type: "hr"}},
+				[]*html.Tag{{
+					Type: "hr",
+					Tags: html.EmptyTags(),
+				}},
 			),
 		},
 		{
@@ -56,7 +66,10 @@ func TestSuccessfulParseHtml(t *testing.T) {
 					{
 						Type: "div",
 						Tags: html.NewTags(
-							[]*html.Tag{{Type: "hr"}},
+							[]*html.Tag{{
+								Type: "hr",
+								Tags: html.EmptyTags(),
+							}},
 						),
 					},
 				},
@@ -76,6 +89,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 									Attributes: html.NewAttributes([]*html.Attribute{
 										{Name: "data"},
 									}),
+									Tags: html.EmptyTags(),
 								},
 							},
 						),
@@ -90,10 +104,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 					{
 						Type:       "img",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
+						Tags:       html.EmptyTags(),
 					},
 					{
 						Type:       "hr",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "data"}}),
+						Tags:       html.EmptyTags(),
 					},
 				},
 			),
@@ -102,8 +118,14 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			"<img/><hr/>",
 			html.NewTags(
 				[]*html.Tag{
-					{Type: "img"},
-					{Type: "hr"},
+					{
+						Type: "img",
+						Tags: html.EmptyTags(),
+					},
+					{
+						Type: "hr",
+						Tags: html.EmptyTags(),
+					},
 				},
 			),
 		},
@@ -118,6 +140,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 								{
 									Type: "p",
 									Text: "Paragraph text",
+									Tags: html.EmptyTags(),
 								},
 							},
 						),
@@ -137,6 +160,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 								{
 									Type: "p",
 									Text: "Paragraph text",
+									Tags: html.EmptyTags(),
 								},
 							},
 						),
@@ -156,6 +180,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 								{
 									Type: "p",
 									Text: "Paragraph text",
+									Tags: html.EmptyTags(),
 								},
 							},
 						),
@@ -177,6 +202,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 										[]*html.Tag{
 											{
 												Type: "a",
+												Tags: html.EmptyTags(),
 											},
 										},
 									),
@@ -195,8 +221,14 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						Type: "div",
 						Tags: html.NewTags(
 							[]*html.Tag{
-								{Type: "p"},
-								{Type: "a"},
+								{
+									Type: "p",
+									Tags: html.EmptyTags(),
+								},
+								{
+									Type: "a",
+									Tags: html.EmptyTags(),
+								},
 							},
 						),
 					},
@@ -211,7 +243,9 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
-			assert.Equal(t, testCase.expectedTags, tags)
+			assert.Condition(t, func() bool {
+				return testCase.expectedTags.Equal(tags)
+			})
 		})
 	}
 }

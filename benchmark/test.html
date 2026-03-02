@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Large Structure-Only HTML Document</title>
+</head>
+
+<body>
+
+	<nav>
+		<ul>
+			<li><a href="#introduction">Introduction</a></li>
+			<li><a href="#data-sets">Detailed Data Sets</a></li>
+			<li><a href="#documentation">Documentation</a></li>
+			<li><a href="#media-assets">Media Assets</a></li>
+			<li><a href="#user-input">User Input Form</a></li>
+		</ul>
+	</nav>
+
+	<hr />
+
+	<header id="introduction">
+		<h1>Large-Scale HTML Structure Report</h1>
+		<p>This document serves as a demonstration of <strong>pure HTML5</strong> capabilities, focusing on
+			semantic organization and data representation without external styling or scripting.</p>
+	</header>
+
+	<section id="data-sets">
+		<h2>Section 1: Complex Data Tables</h2>
+		<p>Below is a representation of multi-column data using standard table tags.</p>
+
+		<table border="1">
+			<caption>Annual Project Distribution (2024-2026)</caption>
+			<thead>
+				<tr>
+					<th>Project ID</th>
+					<th>Department</th>
+					<th>Priority</th>
+					<th>Status</th>
+					<th>Budget Allocation</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>PRJ-001</td>
+					<td>Research & Development</td>
+					<td>High</td>
+					<td>In Progress</td>
+					<td>$450,000</td>
+				</tr>
+				<tr>
+					<td>PRJ-002</td>
+					<td>Quality Assurance</td>
+					<td>Medium</td>
+					<td>Completed</td>
+					<td>$120,000</td>
+				</tr>
+				<tr>
+					<td>PRJ-003</td>
+					<td>Infrastructure</td>
+					<td>Critical</td>
+					<td>Planning Phase</td>
+					<td>$1,200,000</td>
+				</tr>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="4">Total Allocated Budget</td>
+					<td>$1,770,000</td>
+				</tr>
+			</tfoot>
+		</table>
+	</section>
+
+	<section id="documentation">
+		<h2>Section 2: Nested Documentation</h2>
+		<p>Standardized lists are used here to display hierarchical information.</p>
+
+		<h3>System Requirements</h3>
+		<ol>
+			<li>Hardware Specifications
+				<ul>
+					<li>Minimum 8GB RAM</li>
+					<li>Quad-core Processor</li>
+					<li>256GB SSD Storage</li>
+				</ul>
+			</li>
+			<li>Software Compatibility
+				<ul>
+					<li>Operating Systems:
+						<ul>
+							<li>Windows 10/11</li>
+							<li>macOS Monterey or later</li>
+							<li>Linux (Ubuntu 22.04 LTS)</li>
+						</ul>
+					</li>
+					<li>Web Browsers: Chrome, Firefox, Safari, Edge</li>
+				</ul>
+			</li>
+		</ol>
+
+		<blockquote>
+			"The strength of the web lies in its universality. Access by everyone regardless of disability
+			is an essential aspect."
+			<br />— <em>Tim Berners-Lee</em>
+		</blockquote>
+	</section>
+
+	<section id="user-input">
+		<h2>Section 3: Comprehensive Input Form</h2>
+		<p>This form uses native HTML5 attributes for validation and data types.</p>
+
+		<form action="/submit-data" method="post">
+			<fieldset>
+				<legend>Personal Information</legend>
+				<label for="fname">First Name:</label><br />
+				<input type="text" id="fname" name="fname" required /><br /><br />
+
+				<label for="email">Email Address:</label><br />
+				<input type="email" id="email" name="email"
+					placeholder="name@example.com" /><br /><br />
+
+				<label for="bday">Date of Birth:</label><br />
+				<input type="date" id="bday" name="bday" /><br />
+			</fieldset>
+
+			<fieldset>
+				<legend>Preferences & Feedback</legend>
+				<p>Which features do you use most?</p>
+				<input type="checkbox" id="feat1" name="features" value="Analytics" />
+				<label for="feat1">Analytics</label><br />
+				<input type="checkbox" id="feat2" name="features" value="Cloud" />
+				<label for="feat2">Cloud Storage</label><br />
+				<input type="checkbox" id="feat3" name="features" value="Support" />
+				<label for="feat3">24/7 Support</label><br /><br />
+
+				<label for="experience">Rate your experience (1-10):</label>
+				<input type="number" id="experience" name="experience" min="1" max="10" /><br /><br />
+
+				<label for="comments">Additional Comments:</label><br />
+				<textarea id="comments" name="comments" rows="6" cols="50"></textarea>
+			</fieldset>
+
+			<br />
+			<input type="reset" value="Reset Form" />
+			<input type="submit" value="Submit Data" />
+		</form>
+	</section>
+
+	<hr />
+
+	<footer>
+		<p>Document generated for structural testing purposes.</p>
+		<p>Contact:
+		<address>info@example.com</address>
+		</p>
+		<p>&copy; 2026 Semantic Web Initiative</p>
+	</footer>
+
+</body>
+
+</html>

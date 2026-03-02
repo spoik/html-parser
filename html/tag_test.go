@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testCase struct {
-	Name           string
-	Tag            html.Tag
-	ExpectedString string
-}
-
 func TestFullText(t *testing.T) {
+	type testCase struct {
+		Name           string
+		Tag            html.Tag
+		ExpectedString string
+	}
+
 	testCases := []testCase{
 		{
 			Name:           "Single tag with no text",
@@ -112,7 +112,7 @@ func TestAttribute(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			Name: "Attribute is present in the attirbutes.",
+			Name: "Attribute is present in the attributes.",
 			Tag: &html.Tag{
 				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "id", Value: "profile"},
@@ -122,7 +122,7 @@ func TestAttribute(t *testing.T) {
 			ExpectedResult: &html.Attribute{Name: "id", Value: "profile"},
 		},
 		{
-			Name: "Attribute is not present in the attirbutes.",
+			Name: "Attribute is not present in the attributes.",
 			Tag: &html.Tag{
 				Attributes: html.NewAttributes([]*html.Attribute{
 					{Name: "id", Value: "profile"},
@@ -162,7 +162,7 @@ func TestFindTags(t *testing.T) {
 		{
 			Name: "With one matching tag.",
 			Tag: html.Tag{
-				Tags: html.NewTags([]*html.Tag{
+				Tags: createTagsWithIndex([]*html.Tag{
 					{Type: "a"},
 				}),
 			},

@@ -2,19 +2,26 @@ package html
 
 import (
 	"errors"
-	"slices"
+	"reflect"
 )
 
 type Tags struct {
-	tags []*Tag
+	tags     []*Tag
+	tagIndex *TagIndex
 }
 
+func EmptyTags() *Tags {
+	return &Tags{tags: []*Tag{}, tagIndex: &TagIndex{}}
+}
 func NewTags(tags []*Tag) *Tags {
-	if len(tags) == 0 {
-		return nil
-	}
+	return &Tags{tags: tags, tagIndex: &TagIndex{}}
+}
 
-	return &Tags{tags: tags}
+func TagsWithIndex(tags []*Tag, tagIndex *TagIndex) *Tags {
+	return &Tags{
+		tags:     tags,
+		tagIndex: tagIndex,
+	}
 }
 
 var NoTagAtIndex = errors.New("No tag at index.")
@@ -32,28 +39,34 @@ func (t *Tags) Get(index int) (*Tag, error) {
 	return t.tags[index], nil
 }
 
+func (t *Tags) Equal(other *Tags) bool {
+	return reflect.DeepEqual(t.tags, other.tags)
+}
+
 // Returns the number of Tags.
 func (t *Tags) Length() int {
 	return len(t.tags)
 }
 
-func (t *Tags) Find(tagType string) []*Tag {
-	matches := make([]*Tag, 5)
+// Returns the number of Tags in addition to the number of child tags each Tag has.
+func (t *Tags) FullLength() int {
+	fullLen := t.Length()
 
 	for _, tag := range t.tags {
-		if tag.Type == tagType {
-			tagCopy := *tag
-			tagCopy.Tags = nil
-
-			matches = append(matches, &tagCopy)
+		if tag.Tags == nil {
+			continue
 		}
 
-		matches = append(matches, tag.FindTags(tagType)...)
+		fullLen += tag.Tags.FullLength()
 	}
 
-	matches = slices.DeleteFunc(matches, func(tag *Tag) bool {
-		return tag == nil
-	})
+	return fullLen
+}
 
-	return matches
+func (t *Tags) Find(tagType string) []*Tag {
+	if t.tagIndex == nil {
+		panic("Unable to Find tag by type. TagIndex is nil.")
+	}
+
+	return t.tagIndex.Get(tagType)
 }

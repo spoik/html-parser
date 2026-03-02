@@ -23,7 +23,7 @@ func isAttributeDeliminer(b byte) bool {
 	return b == attributeDeliminer
 }
 
-func ParseTag(r *bufio.Reader) (*html.Tag, error) {
+func ParseTag(r *bufio.Reader, index *html.TagIndex) (*html.Tag, error) {
 	tagType, err := parseTagType(r)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 		return nil, err
 	}
 
-	internalTags, err := parseInternalTags(r)
+	internalTags, err := parseInternalTags(r, index)
 
 	if err != nil {
 		return nil, err
@@ -59,6 +59,10 @@ func ParseTag(r *bufio.Reader) (*html.Tag, error) {
 		Text:       text,
 		Attributes: attributes,
 		Tags:       internalTags,
+	}
+
+	if index != nil {
+		index.Add(tag)
 	}
 
 	return tag, nil
@@ -104,10 +108,10 @@ func parseTagType(r *bufio.Reader) (string, error) {
 	return typeBuilder.String(), nil
 }
 
-func parseInternalTags(r *bufio.Reader) (*html.Tags, error) {
+func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error) {
 	// TODO: Initialize childTags with a starting size to
 	//minimize how often the slice is resized
-	var childTags []*html.Tag
+	childTags := []*html.Tag{}
 
 	for {
 		bytes, err := r.Peek(2)
@@ -152,7 +156,7 @@ func parseInternalTags(r *bufio.Reader) (*html.Tags, error) {
 			return nil, err
 		}
 
-		childTag, err := ParseTag(r)
+		childTag, err := ParseTag(r, index)
 
 		if err != nil {
 			return nil, err
