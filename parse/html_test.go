@@ -191,37 +191,37 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<div><p><a></a></p></div>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
-									Tags: html.NewTags(
-										[]*html.Tag{
+									Tags: html.NewTags(html.NewTagsOpts{
+										Tags: []*html.Tag{
 											{
 												Type: "a",
 												Tags: html.EmptyTags(),
 											},
 										},
-									),
+									}),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div><p></p><a></a></div>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
 									Tags: html.EmptyTags(),
@@ -231,10 +231,10 @@ func TestSuccessfulParseHtml(t *testing.T) {
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 	}
 

@@ -10,7 +10,7 @@ import (
 func createTagsWithIndex(tags []*html.Tag) *html.Tags {
 	index := &html.TagIndex{}
 	index.AddAll(tags)
-	return html.TagsWithIndex(tags, index)
+	return html.NewTags(html.NewTagsOpts{Tags: tags, TagIndex: index})
 }
 
 func TestFind(t *testing.T) {
@@ -51,8 +51,10 @@ func TestFind(t *testing.T) {
 							Value: "Value",
 						},
 					}),
-					Tags: html.NewTags([]*html.Tag{
-						{Type: "p"},
+					Tags: html.NewTags(html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{Type: "p"},
+						},
 					}),
 				},
 			}),
@@ -88,12 +90,16 @@ func TestFind(t *testing.T) {
 			Tags: createTagsWithIndex([]*html.Tag{
 				{
 					Type: "a",
-					Tags: html.NewTags([]*html.Tag{
-						{
-							Type: "a",
-							Tags: html.NewTags([]*html.Tag{
-								{Type: "a"},
-							}),
+					Tags: html.NewTags(html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{
+								Type: "a",
+								Tags: html.NewTags(html.NewTagsOpts{
+									Tags: []*html.Tag{
+										{Type: "a"},
+									},
+								}),
+							},
 						},
 					}),
 				},
@@ -123,9 +129,11 @@ func TestFindDoesNotModifyOriginalTags(t *testing.T) {
 	tags := createTagsWithIndex([]*html.Tag{
 		{
 			Type: "a",
-			Tags: html.NewTags([]*html.Tag{
-				{Type: "p"},
-				{Type: "img"},
+			Tags: html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
+					{Type: "p"},
+					{Type: "img"},
+				},
 			}),
 		},
 	})
@@ -149,7 +157,7 @@ func TestFindDoesNotModifyOriginalTags(t *testing.T) {
 func TestGet(t *testing.T) {
 	type testCase struct {
 		Name           string
-		Tags           html.Tags
+		Tags           *html.Tags
 		Index          int
 		ExpectedResult *html.Tag
 		ExpectedError  error
@@ -158,21 +166,21 @@ func TestGet(t *testing.T) {
 	testCases := []testCase{
 		{
 			Name:           "Empty Tags.",
-			Tags:           html.Tags{},
+			Tags:           &html.Tags{},
 			Index:          0,
 			ExpectedResult: nil,
 			ExpectedError:  html.NoTagAtIndex,
 		},
 		{
 			Name:           "Out of bounds index.",
-			Tags:           *html.NewTags([]*html.Tag{{Type: "a"}}),
+			Tags:           html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Type: "a"}}}),
 			Index:          4,
 			ExpectedResult: nil,
 			ExpectedError:  html.NoTagAtIndex,
 		},
 		{
 			Name:           "Valid index.",
-			Tags:           *html.NewTags([]*html.Tag{{Type: "a"}}),
+			Tags:           html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Type: "a"}}}),
 			Index:          0,
 			ExpectedResult: &html.Tag{Type: "a"},
 			ExpectedError:  nil,
@@ -212,16 +220,18 @@ func TestLength(t *testing.T) {
 		},
 		{
 			Name:           "Tags with empty tags slice.",
-			Tags:           html.NewTags([]*html.Tag{}),
+			Tags:           html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{}}),
 			ExpectedResult: 0,
 		},
 		{
 			Name: "Tags with tags slice.",
 			Tags: html.NewTags(
-				[]*html.Tag{
-					{Type: "a"},
-					{Type: "p"},
-					{Type: "img"},
+				html.NewTagsOpts{
+					Tags: []*html.Tag{
+						{Type: "a"},
+						{Type: "p"},
+						{Type: "img"},
+					},
 				},
 			),
 			ExpectedResult: 3,
@@ -254,42 +264,44 @@ func TestFullLength(t *testing.T) {
 		{
 			Name: "One tag.",
 			Tags: html.NewTags(
-				[]*html.Tag{
+				html.NewTagsOpts{Tags: []*html.Tag{
 					{Type: "a"},
-				},
+				}},
 			),
 			ExpectedResult: 1,
 		},
 		{
 			Name: "Two tag.",
 			Tags: html.NewTags(
-				[]*html.Tag{
+				html.NewTagsOpts{Tags: []*html.Tag{
 					{Type: "a"},
 					{Type: "p"},
-				},
+				}},
 			),
 			ExpectedResult: 2,
 		},
 		{
 			Name: "Deeply nested tags.",
 			Tags: html.NewTags(
-				[]*html.Tag{
-					{
-						Type: "a",
-						Tags: html.NewTags(
-							[]*html.Tag{
-								{Type: "img"},
-								{Type: "p"},
-							},
-						),
-					},
-					{
-						Type: "p",
-						Tags: html.NewTags(
-							[]*html.Tag{
-								{Type: "p"},
-							},
-						),
+				html.NewTagsOpts{
+					Tags: []*html.Tag{
+						{
+							Type: "a",
+							Tags: html.NewTags(
+								html.NewTagsOpts{Tags: []*html.Tag{
+									{Type: "img"},
+									{Type: "p"},
+								}},
+							),
+						},
+						{
+							Type: "p",
+							Tags: html.NewTags(
+								html.NewTagsOpts{Tags: []*html.Tag{
+									{Type: "p"},
+								}},
+							),
+						},
 					},
 				},
 			),

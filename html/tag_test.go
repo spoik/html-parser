@@ -29,7 +29,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with no text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags([]*html.Tag{{Type: "a"}}),
+				Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Type: "a"}}}),
 			},
 			ExpectedString: "Hello",
 		},
@@ -37,7 +37,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags([]*html.Tag{{Text: "World"}}),
+				Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Text: "World"}}}),
 			},
 			ExpectedString: "HelloWorld",
 		},
@@ -45,7 +45,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags([]*html.Tag{{Text: " World"}}),
+				Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Text: " World"}}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -53,7 +53,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags([]*html.Tag{{Text: " World"}}),
+				Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Text: " World"}}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -62,9 +62,11 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(
-					[]*html.Tag{
-						{Text: "There"},
-						{Text: "World"},
+					html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{Text: "There"},
+							{Text: "World"},
+						},
 					},
 				),
 			},
@@ -75,14 +77,16 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(
-					[]*html.Tag{
-						{
-							Text: "There",
-							Tags: html.NewTags([]*html.Tag{{Text: "How"}}),
-						},
-						{
-							Text: "Are",
-							Tags: html.NewTags([]*html.Tag{{Text: "You"}}),
+					html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{
+								Text: "There",
+								Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Text: "How"}}}),
+							},
+							{
+								Text: "Are",
+								Tags: html.NewTags(html.NewTagsOpts{Tags: []*html.Tag{{Text: "You"}}}),
+							},
 						},
 					},
 				),
