@@ -19,8 +19,8 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			html.NewTags(
-				[]*html.Tag{{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{{
 					Type: "a",
 					Attributes: html.NewAttributes([]*html.Attribute{
 						{
@@ -30,60 +30,61 @@ func TestSuccessfulParseHtml(t *testing.T) {
 					}),
 					Tags: html.EmptyTags(),
 				}},
+			},
 			),
 		},
 		{
 			"<html>",
-			html.NewTags(
-				[]*html.Tag{{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{{
 					Type: "html",
 					Tags: html.EmptyTags(),
 				}},
-			),
+			}),
 		},
 		{
 			"<hr/>",
-			html.NewTags(
-				[]*html.Tag{{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{{
 					Type: "hr",
 					Tags: html.EmptyTags(),
 				}},
-			),
+			}),
 		},
 		{
 			"<hr",
-			html.NewTags(
-				[]*html.Tag{{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{{
 					Type: "hr",
 					Tags: html.EmptyTags(),
 				}},
-			),
+			}),
 		},
 		{
 			"<div><hr>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{{
 								Type: "hr",
 								Tags: html.EmptyTags(),
 							}},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<img src><hr data>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type:       "img",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "hr",
 									Attributes: html.NewAttributes([]*html.Attribute{
@@ -92,15 +93,15 @@ func TestSuccessfulParseHtml(t *testing.T) {
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<img src/><hr data/>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type:       "img",
 						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
@@ -112,12 +113,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						Tags:       html.EmptyTags(),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<img/><hr/>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "img",
 						Tags: html.EmptyTags(),
@@ -127,100 +128,100 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						Tags: html.EmptyTags(),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div><p>Paragraph text",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p></div>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div><p><a></a></p></div>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
-									Tags: html.NewTags(
-										[]*html.Tag{
+									Tags: html.NewTags(html.NewTagsOpts{
+										Tags: []*html.Tag{
 											{
 												Type: "a",
 												Tags: html.EmptyTags(),
 											},
 										},
-									),
+									}),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 		{
 			"<div><p></p><a></a></div>",
-			html.NewTags(
-				[]*html.Tag{
+			html.NewTags(html.NewTagsOpts{
+				Tags: []*html.Tag{
 					{
 						Type: "div",
-						Tags: html.NewTags(
-							[]*html.Tag{
+						Tags: html.NewTags(html.NewTagsOpts{
+							Tags: []*html.Tag{
 								{
 									Type: "p",
 									Tags: html.EmptyTags(),
@@ -230,10 +231,10 @@ func TestSuccessfulParseHtml(t *testing.T) {
 									Tags: html.EmptyTags(),
 								},
 							},
-						),
+						}),
 					},
 				},
-			),
+			}),
 		},
 	}
 

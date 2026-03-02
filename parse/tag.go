@@ -165,7 +165,9 @@ func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error
 		childTags = append(childTags, childTag)
 	}
 
-	return html.NewTags(childTags), nil
+	return html.NewTags(html.NewTagsOpts{
+		Tags: childTags,
+	}), nil
 }
 
 // Advance the bufio.Reader past the closing tag. This would advance the reader just past the
