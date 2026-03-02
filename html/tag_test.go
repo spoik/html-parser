@@ -29,7 +29,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with no text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(nil),
+				Tags: html.NewTags([]*html.Tag{{Type: "a"}}),
 			},
 			ExpectedString: "Hello",
 		},

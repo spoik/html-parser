@@ -10,18 +10,28 @@ type Tags struct {
 	tagIndex *TagIndex
 }
 
-func EmptyTags() *Tags {
-	return &Tags{tags: []*Tag{}, tagIndex: &TagIndex{}}
-}
-func NewTags(tags []*Tag) *Tags {
-	return &Tags{tags: tags, tagIndex: &TagIndex{}}
+type NewTagsOpts struct {
+	Tags     []*Tag
+	TagIndex *TagIndex
 }
 
-func TagsWithIndex(tags []*Tag, tagIndex *TagIndex) *Tags {
-	return &Tags{
-		tags:     tags,
-		tagIndex: tagIndex,
+func EmptyTags() *Tags {
+	return NewTags(NewTagsOpts{})
+}
+
+func NewTags(o NewTagsOpts) *Tags {
+	tags := o.Tags
+
+	if tags == nil {
+		tags = []*Tag{}
 	}
+
+	tagIndex := o.TagIndex
+
+	if tagIndex == nil {
+		tagIndex = &TagIndex{}
+	}
+	return &Tags{tags: tags, tagIndex: tagIndex}
 }
 
 var NoTagAtIndex = errors.New("No tag at index.")
