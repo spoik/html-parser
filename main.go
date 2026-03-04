@@ -7,16 +7,9 @@ import (
 )
 
 func main() {
-	html := "<a href=\"https://example.com\">Example</a>"
-	tags, err := parse.ParseHtml(&html)
+	html := "<p>Example 1<span>Example 2</span><span>Example 3</span></p>"
+	tags, _ := parse.ParseHtml(&html)
 
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
-
-	aTags := tags.Find("im")
-
-	fmt.Println(len(aTags))
-	fmt.Printf("%+v", aTags)
+	tag, _ := tags.Get(0)
+	fmt.Println(tag.FullText())
 }

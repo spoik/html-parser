@@ -24,6 +24,7 @@ func (t *Tag) FullText() string {
 	return b.String()
 }
 
+// Returns the html.Attribute belonging to the html.Tag with the given name. If the html.Tag has no matching attribute, nil is returned.
 func (t *Tag) Attribute(name string) *Attribute {
 	return t.Attributes.Attribute(name)
 }

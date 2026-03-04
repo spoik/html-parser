@@ -109,3 +109,20 @@ func main() {
 	tag.FullText() // "Example 1Example2 Example 3"
 }
 ```
+
+#### `html.Tag.Attribute()`
+Returns the `html.Attribute` belonging to the `html.Tag` with the given name. If the `html.Tag` has no matching
+attribute, nil is returned.
+
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<p id=\"main\">Example 1</a>"
+	tags, _ := parse.ParseHtml(&html)
+
+	tag, _ := tags.Get(0)
+	tag.Attribute("id") // Returns *Attribute{ Name: "id", Value: "main" }
+	tag.Attribute("class") // Returns nil
+}
+```
