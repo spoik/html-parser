@@ -143,13 +143,13 @@ func TestFindDoesNotModifyOriginalTags(t *testing.T) {
 
 	tag, err := tags.Get(0)
 	assert.NoError(t, err)
-	assert.Equal(t, 2, tag.Tags.Length())
+	assert.Equal(t, 2, tag.Tags.Len())
 
 	result := tags.Find("a")
 
 	tag, err = tags.Get(0)
 	assert.NoError(t, err)
-	assert.Equal(t, 2, tag.Tags.Length())
+	assert.Equal(t, 2, tag.Tags.Len())
 
 	expectedTags := []*html.Tag{
 		{Type: "a"},
@@ -212,7 +212,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-func TestLength(t *testing.T) {
+func TestLen(t *testing.T) {
 	type testCase struct {
 		Name           string
 		Tags           *html.Tags
@@ -249,13 +249,13 @@ func TestLength(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := testCase.Tags.Length()
+			result := testCase.Tags.Len()
 			assert.Equal(t, testCase.ExpectedResult, result)
 		})
 	}
 }
 
-func TestFullLength(t *testing.T) {
+func TestFullLen(t *testing.T) {
 	type testCase struct {
 		Name           string
 		Tags           *html.Tags
@@ -322,7 +322,7 @@ func TestFullLength(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := testCase.Tags.FullLength()
+			result := testCase.Tags.FullLen()
 			assert.Equal(t, testCase.ExpectedResult, result)
 		})
 	}

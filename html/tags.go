@@ -42,7 +42,7 @@ func (t *Tags) Get(index int) (*Tag, error) {
 		return nil, NoTagAtIndex
 	}
 
-	if index > t.Length() {
+	if index > t.Len() {
 		return nil, NoTagAtIndex
 	}
 
@@ -54,20 +54,20 @@ func (t *Tags) Equal(other *Tags) bool {
 }
 
 // Returns the number of Tags.
-func (t *Tags) Length() int {
+func (t *Tags) Len() int {
 	return len(t.tags)
 }
 
 // Returns the number of Tags in addition to the number of child tags each Tag has.
-func (t *Tags) FullLength() int {
-	fullLen := t.Length()
+func (t *Tags) FullLen() int {
+	fullLen := t.Len()
 
 	for _, tag := range t.tags {
 		if tag.Tags == nil {
 			continue
 		}
 
-		fullLen += tag.Tags.FullLength()
+		fullLen += tag.Tags.FullLen()
 	}
 
 	return fullLen

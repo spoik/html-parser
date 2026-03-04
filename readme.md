@@ -46,7 +46,7 @@ func main() {
 }
 ```
 
-#### `html.Tags.Length()`
+#### `html.Tags.Len()`
 Returns the number of immediate children `html.Tag`s.
 ```go
 import "github.com/spoik/html-parser/parse"
@@ -55,13 +55,13 @@ func main() {
 	html := "<p>Example 2</p><p>Example <span>2</span></p>"
 	tags, _ := parse.ParseHtml(&html)
 
-    length := tags.Length()
+    length := tags.Len()
 
     // length == 2
 }
 ```
 
-#### `html.Tags.FullLength()`
+#### `html.Tags.FullLen()`
 Returns the total number of children `html.Tag`s.
 ```go
 import "github.com/spoik/html-parser/parse"
@@ -70,7 +70,7 @@ func main() {
 	html := "<p>Example 2</p><p>Example <span>2</span></p>"
 	tags, _ := parse.ParseHtml(&html)
 
-    length := tags.FullLength()
+    length := tags.FullLen()
 
     // length == 3
 }
