@@ -12,6 +12,7 @@ import (
 )
 
 var tagEndBytes = []byte{'>', '/'}
+var tagTypesWithOptionalClosingTag = []string{"br", "hr", "img", "input", "link", "meta", "source"}
 
 func isTagEndChar(b byte) bool {
 	return slices.Contains(tagEndBytes, b)
@@ -220,22 +221,17 @@ func parseClosingTag(tagType string, r *bufio.Reader) error {
 	endTagTypeBytes, err := r.Peek(len(tagType))
 
 	if errors.Is(err, io.EOF) {
-		// Since the end of file has been reached, discard what's left in the buffer. There is
-		// Nothing left to parse.
-		_, err := r.Discard(len(tagType))
-
-		if err != nil && !errors.Is(err, io.EOF) {
-			return err
-		}
-
-		return nil
+		return fmt.Errorf(
+			"End tag missing for tag type \"%s\". The end of HTML reached before finding the end tag.",
+			tagType,
+		)
 	}
 
 	endTagType := string(endTagTypeBytes)
 
-	if endTagType != tagType {
+	if endTagType != tagType && !slices.Contains(tagTypesWithOptionalClosingTag, tagType) {
 		return fmt.Errorf(
-			"End tag type does not matching opening tag type. Expected end tag type %s, but got %s",
+			"End tag type does not matching opening tag type. Expected end tag type \"%s\", but got \"%s\".",
 			tagType,
 			string(endTagType),
 		)

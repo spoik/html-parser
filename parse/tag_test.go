@@ -123,7 +123,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 			},
 		},
 		{
-			"<html lang>Example</a>",
+			"<html lang>Example</html>",
 			&html.Tag{
 				Type: "html",
 				Text: "Example",
