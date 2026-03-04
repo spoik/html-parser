@@ -29,6 +29,7 @@ func (t *Tag) Attribute(name string) *Attribute {
 	return t.Attributes.Attribute(name)
 }
 
+// Returns all children tag of the given type.
 func (t *Tag) FindTags(tagType string) []*Tag {
 	if t.Tags == nil {
 		return []*Tag{}

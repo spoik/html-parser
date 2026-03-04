@@ -27,7 +27,7 @@ func main() {
 
 	tags := tags.Find('a')
 
-	// tags will be []*Tag{{ html.Tag{Type: "a", Text: "Example 1"}, html.Tag{Type: "a", Text: "Example 2" }}}
+	// tags will be []*Tag{{ html.Tag{Type: "a", Text: "Example 1"}, html.Tag{Type: "a", Text: "Example 2" }}
 }
 ```
 
@@ -124,5 +124,21 @@ func main() {
 	tag, _ := tags.Get(0)
 	tag.Attribute("id") // Returns *Attribute{ Name: "id", Value: "main" }
 	tag.Attribute("class") // Returns nil
+}
+```
+
+#### `html.Tag.FindTags()`
+Returns all children tag of the given type.
+
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<p>Example 1 <span>Example 2</span> <span>Example 3</span> <strong>strong</strong></p>"
+	tags, _ := parse.ParseHtml(&html)
+
+	tag, _ := tags.Get(0)
+	tags := tag.FindTags("span")
+	// tags == []*Tag{{Type: "span", Text: "Example 2"}, {Type: "span", Text: "Example 3"}}
 }
 ```
