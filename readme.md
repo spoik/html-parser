@@ -14,7 +14,7 @@ func main() {
 }
 ```
 
-### Querying
+### `html.Tags`
 #### `html.Tags.Find()`
 Returns all `html.Tag` instance of a specific type.
 
@@ -91,5 +91,21 @@ func main() {
 
 	tags1.Equal(tags2) // true
 	tags1.Equal(tags3) // false
+}
+```
+
+### `html.Tag`
+#### `html.Tag.FullText()`
+Returns the tag's text concatenated with it's children's text.
+
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<p>Example 1<span>Example 2</span> <span>Example 3</span></p>"
+	tags, _ := parse.ParseHtml(&html)
+
+	tag, _ := tags.Get(0)
+	tag.FullText() // "Example 1Example2 Example 3"
 }
 ```
