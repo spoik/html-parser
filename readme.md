@@ -1,8 +1,8 @@
 # Basic HTML Parser
 Does this need to exist? No. I created this to get more familiar with golang.
 
-# Features & Usage
-## Initialization
+## Features & Usage
+### Initialization
 Use `html.ParseHtml` to parse an HTML string. Returns a `html.Tags` that represents the HTML.
 
 ```go
@@ -14,7 +14,7 @@ func main() {
 }
 ```
 
-## Querying
+### Querying
 `html.Tags` have a `Find` method that returns all `Tag` instance of a specific type.
 
 ```go
