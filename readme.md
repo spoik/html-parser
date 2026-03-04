@@ -15,7 +15,8 @@ func main() {
 ```
 
 ### Querying
-`html.Tags` have a `Find` method that returns all `Tag` instance of a specific type.
+#### `html.Tags.Find()`
+Returns all `html.Tag` instance of a specific type.
 
 ```go
 import "github.com/spoik/html-parser/parse"
@@ -27,5 +28,50 @@ func main() {
     tags := tags.Find('a')
 
     // tags will be []*Tag{{ html.Tag{Type: "a", Text: "Example 1"}, html.Tag{Type: "a", Text: "Example 2" }}}
+}
+```
+
+#### `html.Tags.Get()`
+Returns the `html.Tag` at a given index.
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<a>Example 1</a><p>Example 2</p>"
+	tags, _ := parse.ParseHtml(&html)
+
+    tag, _:= tags.Get(1)
+
+    // tag will be *html.Tag{Type: "p", Text: "Example 2"}
+}
+```
+
+#### `html.Tags.Length()`
+Returns the number of immediate children `html.Tag`s.
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<p>Example 2</p><p>Example <span>2</span></p>"
+	tags, _ := parse.ParseHtml(&html)
+
+    length := tags.Length()
+
+    // length == 2
+}
+```
+
+#### `html.Tags.FullLength()`
+Returns the total number of children `html.Tag`s.
+```go
+import "github.com/spoik/html-parser/parse"
+
+func main() {
+	html := "<p>Example 2</p><p>Example <span>2</span></p>"
+	tags, _ := parse.ParseHtml(&html)
+
+    length := tags.FullLength()
+
+    // length == 3
 }
 ```
