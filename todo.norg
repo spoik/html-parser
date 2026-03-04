@@ -1,2 +1,3 @@
-- ( ) Add readme that outlines functionality.
 - ( ) Don't return an error when a tag that doesn't require a closing tag is missing a closing tag. For instance <img>, <link>, and <meta>.
+- ( ) Add iterator to Tags.
+- ( ) Add readme that outlines functionality.
