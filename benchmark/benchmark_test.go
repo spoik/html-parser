@@ -20,7 +20,7 @@ func testFileContents(b *testing.B) *string {
 	return &str
 }
 
-func testFileTags(b *testing.B) *html.Tags {
+func testFileTags(b *testing.B) html.Tags {
 	html := testFileContents(b)
 	tags, err := parse.ParseHtml(html)
 

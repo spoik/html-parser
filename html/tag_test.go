@@ -30,7 +30,7 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{{Type: "a"}},
+					Tags: []html.Tag{{Type: "a"}},
 				}),
 			},
 			ExpectedString: "Hello",
@@ -40,7 +40,7 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{{Text: "World"}},
+					Tags: []html.Tag{{Text: "World"}},
 				}),
 			},
 			ExpectedString: "HelloWorld",
@@ -50,7 +50,7 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{{Text: " World"}},
+					Tags: []html.Tag{{Text: " World"}},
 				}),
 			},
 			ExpectedString: "Hello World",
@@ -60,7 +60,7 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{{Text: " World"}},
+					Tags: []html.Tag{{Text: " World"}},
 				}),
 			},
 			ExpectedString: "Hello World",
@@ -70,7 +70,7 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{
+					Tags: []html.Tag{
 						{Text: "There"},
 						{Text: "World"},
 					},
@@ -83,17 +83,17 @@ func TestFullText(t *testing.T) {
 			Tag: html.Tag{
 				Text: "Hello",
 				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []*html.Tag{
+					Tags: []html.Tag{
 						{
 							Text: "There",
 							Tags: html.NewTags(html.NewTagsOpts{
-								Tags: []*html.Tag{{Text: "How"}},
+								Tags: []html.Tag{{Text: "How"}},
 							}),
 						},
 						{
 							Text: "Are",
 							Tags: html.NewTags(html.NewTagsOpts{
-								Tags: []*html.Tag{{Text: "You"}},
+								Tags: []html.Tag{{Text: "You"}},
 							}),
 						},
 					},
@@ -116,32 +116,35 @@ func TestFullText(t *testing.T) {
 
 func TestAttribute(t *testing.T) {
 	type testCase struct {
-		Name           string
-		Tag            *html.Tag
-		AttrName       string
-		ExpectedResult *html.Attribute
+		Name              string
+		Tag               html.Tag
+		AttrName          string
+		ExpectedAttribute html.Attribute
+		EpxectedOk        bool
 	}
 
 	testCases := []testCase{
 		{
 			Name: "Attribute is present in the attributes.",
-			Tag: &html.Tag{
-				Attributes: html.NewAttributes([]*html.Attribute{
+			Tag: html.Tag{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "id", Value: "profile"},
 				}),
 			},
-			AttrName:       "id",
-			ExpectedResult: &html.Attribute{Name: "id", Value: "profile"},
+			AttrName:          "id",
+			ExpectedAttribute: html.Attribute{Name: "id", Value: "profile"},
+			EpxectedOk:        true,
 		},
 		{
 			Name: "Attribute is not present in the attributes.",
-			Tag: &html.Tag{
-				Attributes: html.NewAttributes([]*html.Attribute{
+			Tag: html.Tag{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "id", Value: "profile"},
 				}),
 			},
-			AttrName:       "class",
-			ExpectedResult: nil,
+			AttrName:          "class",
+			ExpectedAttribute: html.Attribute{},
+			EpxectedOk:        false,
 		},
 	}
 
@@ -149,9 +152,10 @@ func TestAttribute(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := testCase.Tag.Attribute(testCase.AttrName)
+			result, ok := testCase.Tag.Attribute(testCase.AttrName)
 
-			assert.Equal(t, testCase.ExpectedResult, result)
+			assert.Equal(t, testCase.EpxectedOk, ok)
+			assert.Equal(t, testCase.ExpectedAttribute, result)
 		})
 	}
 }
@@ -161,25 +165,27 @@ func TestFindTags(t *testing.T) {
 		Name           string
 		Tag            html.Tag
 		TagType        string
-		ExpectedResult []*html.Tag
+		ExpectedResult []html.Tag
 	}
 
 	testCases := []testCase{
 		{
-			Name:           "With no tags.",
-			Tag:            html.Tag{},
+			Name: "With no tags.",
+			Tag: html.Tag{
+				Tags: createTagsWithIndex([]html.Tag{}),
+			},
 			TagType:        "a",
-			ExpectedResult: []*html.Tag{},
+			ExpectedResult: []html.Tag{},
 		},
 		{
 			Name: "With one matching tag.",
 			Tag: html.Tag{
-				Tags: createTagsWithIndex([]*html.Tag{
+				Tags: createTagsWithIndex([]html.Tag{
 					{Type: "a"},
 				}),
 			},
 			TagType: "a",
-			ExpectedResult: []*html.Tag{
+			ExpectedResult: []html.Tag{
 				{Type: "a"},
 			},
 		},
@@ -222,7 +228,7 @@ func TestTagString(t *testing.T) {
 				Text: "Section text",
 				Tags: html.NewTags(
 					html.NewTagsOpts{
-						Tags: []*html.Tag{
+						Tags: []html.Tag{
 							{
 								Type: "div",
 								Text: "Div text",
@@ -243,12 +249,12 @@ func TestTagString(t *testing.T) {
 				Text: "Section text",
 				Tags: html.NewTags(
 					html.NewTagsOpts{
-						Tags: []*html.Tag{
+						Tags: []html.Tag{
 							{
 								Type: "div",
 								Text: "Div text",
 								Tags: html.NewTags(html.NewTagsOpts{
-									Tags: []*html.Tag{
+									Tags: []html.Tag{
 										{
 											Type: "span",
 											Text: "Span text",

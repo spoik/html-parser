@@ -1,6 +1,7 @@
 package html
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,24 +10,24 @@ import (
 func TestNewTags(t *testing.T) {
 	type testCase struct {
 		Name           string
-		Tags           []*Tag
-		ExpectedResult *Tags
+		Tags           []Tag
+		ExpectedResult Tags
 	}
 
 	testCases := []testCase{
 		{
 			Name:           "Empty tag slice.",
-			Tags:           []*Tag{},
-			ExpectedResult: &Tags{tags: []*Tag{}},
+			Tags:           []Tag{},
+			ExpectedResult: Tags{tags: []Tag{}},
 		},
 		{
 			Name: "Populated tag slice.",
-			Tags: []*Tag{
+			Tags: []Tag{
 				{Type: "a"},
 				{Type: "p"},
 			},
-			ExpectedResult: &Tags{
-				tags: []*Tag{
+			ExpectedResult: Tags{
+				tags: []Tag{
 					{Type: "a"},
 					{Type: "p"},
 				},
@@ -41,9 +42,12 @@ func TestNewTags(t *testing.T) {
 			result := NewTags(NewTagsOpts{Tags: testCase.Tags})
 			assert.Condition(
 				t,
-				func() bool {
-					return testCase.ExpectedResult.Equal(result)
-				},
+				func() bool { return testCase.ExpectedResult.Equal(result) },
+				fmt.Sprintf(
+					"Tags are not equal: Expected \"%s\" got \"%s\".",
+					testCase.ExpectedResult,
+					result,
+				),
 			)
 		})
 	}
@@ -59,8 +63,8 @@ func TestEqual(t *testing.T) {
 	testCases := []testCase{
 		{
 			Name:  "Both html.Tags have a no tags.",
-			TagsA: Tags{tags: []*Tag{}},
-			TagsB: Tags{tags: []*Tag{}},
+			TagsA: Tags{},
+			TagsB: Tags{},
 		},
 		{
 			Name:  "Both html.Tags have a nil tags.",
@@ -69,17 +73,17 @@ func TestEqual(t *testing.T) {
 		},
 		{
 			Name:  "Both html.Tags have a nil TagIndex.",
-			TagsA: Tags{tags: []*Tag{{Type: "a"}}},
-			TagsB: Tags{tags: []*Tag{{Type: "a"}}},
+			TagsA: Tags{tags: []Tag{{Type: "a"}}},
+			TagsB: Tags{tags: []Tag{{Type: "a"}}},
 		},
 		{
 			Name: "One html.Tags has a nil TagIndex and the other doesn't.",
 			TagsA: Tags{
-				tags:     []*Tag{{Type: "a"}},
+				tags:     []Tag{{Type: "a"}},
 				tagIndex: &TagIndex{},
 			},
 			TagsB: Tags{
-				tags: []*Tag{{Type: "a"}},
+				tags: []Tag{{Type: "a"}},
 			},
 		},
 	}
@@ -91,7 +95,7 @@ func TestEqual(t *testing.T) {
 			assert.Condition(
 				t,
 				func() bool {
-					return testCase.TagsA.Equal(&testCase.TagsB)
+					return testCase.TagsA.Equal(testCase.TagsB)
 				},
 			)
 		})
@@ -108,18 +112,18 @@ func TestNotEqual(t *testing.T) {
 	testCases := []testCase{
 		{
 			Name:  "Tags have different tags.",
-			TagsA: Tags{tags: []*Tag{{Type: "a"}}},
-			TagsB: Tags{tags: []*Tag{{Type: "img"}}},
+			TagsA: Tags{tags: []Tag{{Type: "a"}}},
+			TagsB: Tags{tags: []Tag{{Type: "img"}}},
 		},
 		{
 			Name:  "Tags have different amount tags.",
-			TagsA: Tags{tags: []*Tag{{Type: "a"}}},
-			TagsB: Tags{tags: []*Tag{{Type: "a"}, {Type: "img"}}},
+			TagsA: Tags{tags: []Tag{{Type: "a"}}},
+			TagsB: Tags{tags: []Tag{{Type: "a"}, {Type: "img"}}},
 		},
 		{
 			Name:  "Tags have different amount tags.",
-			TagsA: Tags{tags: []*Tag{{Type: "a"}, {Type: "img"}}},
-			TagsB: Tags{tags: []*Tag{{Type: "a"}}},
+			TagsA: Tags{tags: []Tag{{Type: "a"}, {Type: "img"}}},
+			TagsB: Tags{tags: []Tag{{Type: "a"}}},
 		},
 	}
 
@@ -130,10 +134,9 @@ func TestNotEqual(t *testing.T) {
 			assert.Condition(
 				t,
 				func() bool {
-					return !testCase.TagsA.Equal(&testCase.TagsB)
+					return !testCase.TagsA.Equal(testCase.TagsB)
 				},
 			)
 		})
 	}
 }
-

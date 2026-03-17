@@ -17,16 +17,16 @@ import (
 func TestSuccessfulParseTag(t *testing.T) {
 	type testCase struct {
 		string      string
-		expectedTag *html.Tag
+		expectedTag html.Tag
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"http://www.example.com\">Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{{
+				Attributes: html.NewAttributes([]html.Attribute{{
 					Name:  "href",
 					Value: "http://www.example.com",
 				}}),
@@ -35,10 +35,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a href class>Second example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Second example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "href"},
 					{Name: "class"},
 				}),
@@ -47,10 +47,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a href=\"http://www.example.com\" class=\"btn btn-primary\">Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "href",
 						Value: "http://www.example.com",
@@ -65,10 +65,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a class=btn>Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
@@ -79,10 +79,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a class=\"btn>Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
@@ -93,10 +93,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a class=btn\">Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
@@ -107,10 +107,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<a class=btn btn-primary>Example</a>",
-			&html.Tag{
+			html.Tag{
 				Type: "a",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "class",
 						Value: "btn",
@@ -124,10 +124,10 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<html lang>Example</html>",
-			&html.Tag{
+			html.Tag{
 				Type: "html",
 				Text: "Example",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "lang"},
 				}),
 				Tags: html.EmptyTags(),
@@ -135,16 +135,16 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<html>",
-			&html.Tag{
+			html.Tag{
 				Type: "html",
 				Tags: html.EmptyTags(),
 			},
 		},
 		{
 			"<hr class=bold/>",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{
 						Name:  "class",
 						Value: "bold",
@@ -155,9 +155,9 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<hr data-test/>",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "data-test"},
 				}),
 				Tags: html.EmptyTags(),
@@ -165,30 +165,30 @@ func TestSuccessfulParseTag(t *testing.T) {
 		},
 		{
 			"<hr/>",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
 				Tags: html.EmptyTags(),
 			},
 		},
 		{
 			"<hr  />",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
 				Tags: html.EmptyTags(),
 			},
 		},
 		{
 			"<hr",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
 				Tags: html.EmptyTags(),
 			},
 		},
 		{
 			"<hr data",
-			&html.Tag{
+			html.Tag{
 				Type: "hr",
-				Attributes: html.NewAttributes([]*html.Attribute{
+				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "data"},
 				}),
 				Tags: html.EmptyTags(),

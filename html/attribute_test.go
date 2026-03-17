@@ -9,21 +9,21 @@ import (
 func TestNewAttribute(t *testing.T) {
 	type testCase struct {
 		Name       string
-		Attributes []*Attribute
-		Expected   *Attributes
+		Attributes []Attribute
+		Expected   Attributes
 	}
 
 	testCases := []testCase{
 		{
 			Name: "One attribute",
-			Attributes: []*Attribute{
+			Attributes: []Attribute{
 				{
 					Name:  "class",
 					Value: "primary",
 				},
 			},
-			Expected: &Attributes{
-				attributes: map[string]*Attribute{
+			Expected: Attributes{
+				attributes: map[string]Attribute{
 					"class": {
 						Name:  "class",
 						Value: "primary",
@@ -33,7 +33,7 @@ func TestNewAttribute(t *testing.T) {
 		},
 		{
 			Name: "Two attributes",
-			Attributes: []*Attribute{
+			Attributes: []Attribute{
 				{
 					Name:  "class",
 					Value: "primary",
@@ -43,8 +43,8 @@ func TestNewAttribute(t *testing.T) {
 					Value: "name",
 				},
 			},
-			Expected: &Attributes{
-				attributes: map[string]*Attribute{
+			Expected: Attributes{
+				attributes: map[string]Attribute{
 					"class": {
 						Name:  "class",
 						Value: "primary",
@@ -58,7 +58,7 @@ func TestNewAttribute(t *testing.T) {
 		},
 		{
 			Name: "Duplicate attributes",
-			Attributes: []*Attribute{
+			Attributes: []Attribute{
 				{
 					Name:  "class",
 					Value: "primary",
@@ -68,8 +68,8 @@ func TestNewAttribute(t *testing.T) {
 					Value: "secondary",
 				},
 			},
-			Expected: &Attributes{
-				attributes: map[string]*Attribute{
+			Expected: Attributes{
+				attributes: map[string]Attribute{
 					"class": {
 						Name:  "class",
 						Value: "primary",
@@ -92,28 +92,31 @@ func TestNewAttribute(t *testing.T) {
 
 func TestAttribute(t *testing.T) {
 	type testCase struct {
-		Name           string
-		Attributes     *Attributes
-		AttrName       string
-		ExpectedResult *Attribute
+		Name               string
+		Attributes         Attributes
+		AttrName           string
+		ExpectedAttriburte Attribute
+		ExpectedOk         bool
 	}
 
 	testCases := []testCase{
 		{
 			Name: "Attribute is present in the attirbutes.",
-			Attributes: NewAttributes([]*Attribute{
+			Attributes: NewAttributes([]Attribute{
 				{Name: "id", Value: "profile"},
 			}),
-			AttrName:       "id",
-			ExpectedResult: &Attribute{Name: "id", Value: "profile"},
+			AttrName:           "id",
+			ExpectedAttriburte: Attribute{Name: "id", Value: "profile"},
+			ExpectedOk: true,
 		},
 		{
 			Name: "Attribute is not present in the attirbutes.",
-			Attributes: NewAttributes([]*Attribute{
+			Attributes: NewAttributes([]Attribute{
 				{Name: "id", Value: "profile"},
 			}),
-			AttrName: "class",
-			ExpectedResult: nil,
+			AttrName:           "class",
+			ExpectedAttriburte: Attribute{},
+			ExpectedOk: false,
 		},
 	}
 
@@ -121,9 +124,10 @@ func TestAttribute(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := testCase.Attributes.Attribute(testCase.AttrName)
+			result, ok := testCase.Attributes.Attribute(testCase.AttrName)
 
-			assert.Equal(t, testCase.ExpectedResult, result)
+			assert.Equal(t, testCase.ExpectedAttriburte, result)
+			assert.Equal(t, testCase.ExpectedOk, ok)
 		})
 	}
 }
