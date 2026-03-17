@@ -16,12 +16,10 @@ func isAttrNameEndChar(byte byte) bool {
 }
 
 func getAttributes(r *bufio.Reader) (html.Attributes, error) {
-	var attributes html.Attributes
-
 	bytes, err := r.Peek(1)
 
 	if errors.Is(err, io.EOF) {
-		return attributes, nil
+		return html.Attributes{}, nil
 	}
 
 	if err != nil {
@@ -31,7 +29,7 @@ func getAttributes(r *bufio.Reader) (html.Attributes, error) {
 	byte := bytes[0]
 
 	if !isAttributeDeliminer(byte) {
-		return attributes, nil
+		return html.Attributes{}, nil
 	}
 
 	return parseAttributes(r)
