@@ -11,6 +11,10 @@ import (
 	"github.com/spoik/html-parser/parse"
 )
 
+func emptyTags() html.Tags {
+	return html.NewTags([]html.Tag{})
+}
+
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html         string
@@ -28,7 +32,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						Value: "https://example.com",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			}},
 			),
 		},
@@ -36,21 +40,21 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			"<html>",
 			html.NewTags([]html.Tag{{
 				Type: "html",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			}}),
 		},
 		{
 			"<hr/>",
 			html.NewTags([]html.Tag{{
 				Type: "hr",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			}}),
 		},
 		{
 			"<hr",
 			html.NewTags([]html.Tag{{
 				Type: "hr",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			}}),
 		},
 		{
@@ -65,7 +69,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 							Attributes: html.NewAttributes([]html.Attribute{
 								{Name: "data"},
 							}),
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 					}),
 				},
@@ -77,12 +81,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				{
 					Type:       "img",
 					Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
-					Tags:       html.NewTags([]html.Tag{}),
+					Tags:       emptyTags(),
 				},
 				{
 					Type:       "hr",
 					Attributes: html.NewAttributes([]html.Attribute{{Name: "data"}}),
-					Tags:       html.NewTags([]html.Tag{}),
+					Tags:       emptyTags(),
 				},
 			}),
 		},
@@ -91,11 +95,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			html.NewTags([]html.Tag{
 				{
 					Type: "img",
-					Tags: html.NewTags([]html.Tag{}),
+					Tags: emptyTags(),
 				},
 				{
 					Type: "hr",
-					Tags: html.NewTags([]html.Tag{}),
+					Tags: emptyTags(),
 				},
 			}),
 		},
@@ -108,7 +112,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						{
 							Type: "p",
 							Text: "Paragraph text",
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 					}),
 				},
@@ -124,7 +128,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						{
 							Type: "p",
 							Text: "Paragraph text",
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 					}),
 				},
@@ -140,7 +144,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 						{
 							Type: "p",
 							Text: "Paragraph text",
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 					}),
 				},
@@ -157,7 +161,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 							Tags: html.NewTags([]html.Tag{
 								{
 									Type: "a",
-									Tags: html.NewTags([]html.Tag{}),
+									Tags: emptyTags(),
 								},
 							}),
 						},
@@ -173,11 +177,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 					Tags: html.NewTags([]html.Tag{
 						{
 							Type: "p",
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 						{
 							Type: "a",
-							Tags: html.NewTags([]html.Tag{}),
+							Tags: emptyTags(),
 						},
 					}),
 				},
@@ -248,7 +252,7 @@ func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 					Type: "section",
 					Tags: html.NewTags([]html.Tag{{
 						Type: tagType,
-						Tags: html.NewTags([]html.Tag{}),
+						Tags: emptyTags(),
 					}}),
 				},
 			}),
@@ -261,7 +265,7 @@ func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 					Type: "section",
 					Tags: html.NewTags([]html.Tag{{
 						Type: tagType,
-						Tags: html.NewTags([]html.Tag{}),
+						Tags: emptyTags(),
 					}}),
 				},
 			}),

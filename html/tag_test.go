@@ -156,7 +156,7 @@ func TestFindTags(t *testing.T) {
 		{
 			Name: "With no tags.",
 			Tag: html.Tag{
-				Tags: createTagsWithIndex([]html.Tag{}),
+				Tags: tagsWithIndex([]html.Tag{}),
 			},
 			TagType:        "a",
 			ExpectedResult: []html.Tag{},
@@ -164,7 +164,7 @@ func TestFindTags(t *testing.T) {
 		{
 			Name: "With one matching tag.",
 			Tag: html.Tag{
-				Tags: createTagsWithIndex([]html.Tag{
+				Tags: tagsWithIndex([]html.Tag{
 					{Type: "a"},
 				}),
 			},

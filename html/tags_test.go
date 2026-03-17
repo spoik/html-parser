@@ -7,11 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createTagsWithIndex(tags []html.Tag) html.Tags {
+func tagsWithIndex(tags []html.Tag) html.Tags {
 	index := &html.TagIndex{}
 	index.AddAll(tags)
 
 	return html.NewTags(tags, html.WithIndex(index))
+}
+
+func emptyTags() html.Tags {
+	return html.NewTags([]html.Tag{})
 }
 
 func TestFind(t *testing.T) {
@@ -25,13 +29,13 @@ func TestFind(t *testing.T) {
 	testCases := []testCase{
 		{
 			Name:           "With no tags.",
-			Tags:           createTagsWithIndex([]html.Tag{}),
+			Tags:           tagsWithIndex([]html.Tag{}),
 			TagType:        "a",
 			ExpectedResult: []html.Tag{},
 		},
 		{
 			Name: "With one matching tag.",
-			Tags: createTagsWithIndex([]html.Tag{
+			Tags: tagsWithIndex([]html.Tag{
 				{Type: "a"},
 				{Type: "p"},
 			}),
@@ -42,7 +46,7 @@ func TestFind(t *testing.T) {
 		},
 		{
 			Name: "With one matching tag, returns a copy with all attributes except Tags.",
-			Tags: createTagsWithIndex([]html.Tag{
+			Tags: tagsWithIndex([]html.Tag{
 				{
 					Type: "a",
 					Text: "Text",
@@ -73,7 +77,7 @@ func TestFind(t *testing.T) {
 		},
 		{
 			Name: "With multiple matching tag.",
-			Tags: createTagsWithIndex([]html.Tag{
+			Tags: tagsWithIndex([]html.Tag{
 				{Type: "a"},
 				{Type: "a"},
 				{Type: "p"},
@@ -86,7 +90,7 @@ func TestFind(t *testing.T) {
 		},
 		{
 			Name: "With deep matching tags.",
-			Tags: createTagsWithIndex([]html.Tag{
+			Tags: tagsWithIndex([]html.Tag{
 				{
 					Type: "a",
 					Tags: html.NewTags([]html.Tag{
@@ -121,7 +125,7 @@ func TestFind(t *testing.T) {
 }
 
 func TestFindDoesNotModifyOriginalTags(t *testing.T) {
-	tags := createTagsWithIndex([]html.Tag{
+	tags := tagsWithIndex([]html.Tag{
 		{
 			Type: "a",
 			Tags: html.NewTags([]html.Tag{
@@ -213,7 +217,7 @@ func TestLen(t *testing.T) {
 		},
 		{
 			Name:           "Tags with empty tags slice.",
-			Tags:           html.NewTags([]html.Tag{}),
+			Tags:           emptyTags(),
 			ExpectedResult: 0,
 		},
 		{

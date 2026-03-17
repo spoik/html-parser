@@ -30,7 +30,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 					Name:  "href",
 					Value: "http://www.example.com",
 				}}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -42,7 +42,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 					{Name: "href"},
 					{Name: "class"},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -60,7 +60,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Value: "btn btn-primary",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -74,7 +74,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Value: "btn",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -88,7 +88,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Value: "btn",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -102,7 +102,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Value: "btn",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -119,7 +119,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Name: "btn-primary",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -130,14 +130,14 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "lang"},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
 			"<html>",
 			html.Tag{
 				Type: "html",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -150,7 +150,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 						Value: "bold",
 					},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -160,28 +160,28 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "data-test"},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
 			"<hr/>",
 			html.Tag{
 				Type: "hr",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
 			"<hr  />",
 			html.Tag{
 				Type: "hr",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
 			"<hr",
 			html.Tag{
 				Type: "hr",
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 		{
@@ -191,7 +191,7 @@ func TestSuccessfulParseTag(t *testing.T) {
 				Attributes: html.NewAttributes([]html.Attribute{
 					{Name: "data"},
 				}),
-				Tags: html.NewTags([]html.Tag{}),
+				Tags: emptyTags(),
 			},
 		},
 	}
