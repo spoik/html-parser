@@ -195,3 +195,81 @@ func TestFindTags(t *testing.T) {
 		})
 	}
 }
+
+func TestTagString(t *testing.T) {
+	type testCase struct {
+		Tag            html.Tag
+		ExpectedResult string
+	}
+
+	testCases := []testCase{
+		{
+			Tag: html.Tag{
+				Type: "a",
+			},
+			ExpectedResult: "<a></a>",
+		},
+		{
+			Tag: html.Tag{
+				Type: "div",
+				Text: "Testing 123",
+			},
+			ExpectedResult: "<div>Testing 123</div>",
+		},
+		{
+			Tag: html.Tag{
+				Type: "section",
+				Text: "Section text",
+				Tags: html.NewTags(
+					html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{
+								Type: "div",
+								Text: "Div text",
+							},
+							{
+								Type: "span",
+								Text: "Span text",
+							},
+						},
+					},
+				),
+			},
+			ExpectedResult: "<section>Section text<div>Div text</div><span>Span text</span></section>",
+		},
+		{
+			Tag: html.Tag{
+				Type: "section",
+				Text: "Section text",
+				Tags: html.NewTags(
+					html.NewTagsOpts{
+						Tags: []*html.Tag{
+							{
+								Type: "div",
+								Text: "Div text",
+								Tags: html.NewTags(html.NewTagsOpts{
+									Tags: []*html.Tag{
+										{
+											Type: "span",
+											Text: "Span text",
+										},
+									},
+								}),
+							},
+						},
+					},
+				),
+			},
+			ExpectedResult: "<section>Section text<div>Div text<span>Span text</span></div></section>",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.ExpectedResult, func(t *testing.T) {
+			t.Parallel()
+
+			result := testCase.Tag.String()
+			assert.Equal(t, testCase.ExpectedResult, result)
+		})
+	}
+}

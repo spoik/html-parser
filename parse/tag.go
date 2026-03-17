@@ -12,7 +12,6 @@ import (
 )
 
 var tagEndBytes = []byte{'>', '/'}
-var tagTypesWithOptionalClosingTag = []string{"br", "hr", "img", "input", "link", "meta", "source"}
 
 func isTagEndChar(b byte) bool {
 	return slices.Contains(tagEndBytes, b)
@@ -229,9 +228,9 @@ func parseClosingTag(tagType string, r *bufio.Reader) error {
 
 	endTagType := string(endTagTypeBytes)
 
-	if endTagType != tagType && !slices.Contains(tagTypesWithOptionalClosingTag, tagType) {
+	if endTagType != tagType && !slices.Contains(html.SelfClosingTags, tagType) {
 		return fmt.Errorf(
-			"End tag type does not matching opening tag type. Expected end tag type \"%s\", but got \"%s\".",
+			"End tag type does not match opening tag type. Expected end tag type \"%s\", but got \"%s\".",
 			tagType,
 			string(endTagType),
 		)

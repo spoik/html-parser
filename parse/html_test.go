@@ -221,6 +221,30 @@ func TestSuccessfulParseHtml(t *testing.T) {
 				},
 			}),
 		},
+		// TODO: Handle this case. This is tough because the library assumes br will not have a closing tag because
+		// it's allowed to not have a closing tag.
+		// {
+		// 	"<blockquote><br><em></em></blockquote>",
+		// 	html.NewTags(html.NewTagsOpts{
+		// 		Tags: []*html.Tag{
+		// 			{
+		// 				Type: "blockquote",
+		// 				Tags: html.NewTags(html.NewTagsOpts{
+		// 					Tags: []*html.Tag{
+		// 						{
+		// 							Type: "br",
+		// 							Tags: html.EmptyTags(),
+		// 						},
+		// 						{
+		// 							Type: "em",
+		// 							Tags: html.EmptyTags(),
+		// 						},
+		// 					},
+		// 				}),
+		// 			},
+		// 		},
+		// 	}),
+		// },
 	}
 
 	for _, testCase := range testCases {
@@ -229,9 +253,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
-			assert.Condition(t, func() bool {
-				return testCase.expectedTags.Equal(tags)
-			})
+			assert.Condition(
+				t,
+				func() bool { return testCase.expectedTags.Equal(tags) },
+				fmt.Sprintf("Tags are not equal: \"%s\" does not equal \"%s\"", tags, testCase.expectedTags),
+			)
 		})
 	}
 }
@@ -317,7 +343,7 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 		},
 		{
 			"<a></p>",
-			"Error parsing HTML: End tag type does not matching opening tag type. Expected end tag type \"a\", but got \"p\".",
+			"Error parsing HTML: End tag type does not match opening tag type. Expected end tag type \"a\", but got \"p\".",
 		},
 		{
 			"<a><longtagname></a>",

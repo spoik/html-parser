@@ -327,3 +327,40 @@ func TestFullLen(t *testing.T) {
 		})
 	}
 }
+
+func TestTagsString(t *testing.T) {
+	type testCase struct {
+		Tags           html.Tags
+		ExpectedResult string
+	}
+
+	testCases := []testCase{
+		{
+			Tags: *html.NewTags(
+				html.NewTagsOpts{
+					Tags: []*html.Tag{
+						{
+							Type: "a",
+							Text: "Anchor text",
+						},
+						{
+							Type: "span",
+							Text: "Span text",
+						},
+					},
+				},
+			),
+			ExpectedResult: "<a>Anchor text</a><span>Span text</span>",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.ExpectedResult, func(t *testing.T) {
+			t.Parallel()
+
+			result := testCase.Tags.String()
+
+			assert.Equal(t, testCase.ExpectedResult, result)
+		})
+	}
+}

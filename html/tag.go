@@ -1,12 +1,36 @@
 package html
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
+
+var SelfClosingTags = []string{"br", "hr", "img", "input", "link", "meta", "source"}
 
 type Tag struct {
 	Type       string
 	Attributes *Attributes
 	Text       string
 	Tags       *Tags
+}
+
+// Returns a string of HTML representing this Tag and all its children.
+func (t *Tag) String() string {
+	var tagsStr string
+
+	if t.Tags == nil {
+		tagsStr = ""
+	} else {
+		tagsStr = t.Tags.String()
+	}
+
+	return fmt.Sprintf(
+		"<%s>%s%s</%s>",
+		t.Type,
+		t.Text,
+		tagsStr,
+		t.Type,
+	)
 }
 
 // Returns the Tag's Text concatenated with all it's children's Text.

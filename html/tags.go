@@ -3,6 +3,7 @@ package html
 import (
 	"errors"
 	"reflect"
+	"strings"
 )
 
 type Tags struct {
@@ -35,6 +36,16 @@ func NewTags(o NewTagsOpts) *Tags {
 }
 
 var NoTagAtIndex = errors.New("No tag at index.")
+
+func (t *Tags) String() string {
+	var b strings.Builder
+
+	for _, tag := range t.tags {
+		b.WriteString(tag.String())
+	}
+
+	return b.String()
+}
 
 // Returns the tag at the given index. If there is no Tag at the index, nil is returned.
 func (t *Tags) Get(index int) (*Tag, error) {
