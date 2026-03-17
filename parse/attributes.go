@@ -15,8 +15,8 @@ func isAttrNameEndChar(byte byte) bool {
 	return byte == ' '
 }
 
-func getAttributes(r *bufio.Reader) (*html.Attributes, error) {
-	var attributes *html.Attributes
+func getAttributes(r *bufio.Reader) (html.Attributes, error) {
+	var attributes html.Attributes
 
 	bytes, err := r.Peek(1)
 
@@ -25,7 +25,7 @@ func getAttributes(r *bufio.Reader) (*html.Attributes, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		return html.Attributes{}, err
 	}
 
 	byte := bytes[0]
@@ -37,9 +37,9 @@ func getAttributes(r *bufio.Reader) (*html.Attributes, error) {
 	return parseAttributes(r)
 }
 
-func parseAttributes(r *bufio.Reader) (*html.Attributes, error) {
+func parseAttributes(r *bufio.Reader) (html.Attributes, error) {
 	// Make an educated guess that most html elements will have ~5 attributes
-	attributes := make([]*html.Attribute, 5)
+	attributes := make([]html.Attribute, 5)
 
 	for {
 		bytes, err := r.Peek(1)
@@ -49,7 +49,7 @@ func parseAttributes(r *bufio.Reader) (*html.Attributes, error) {
 		}
 
 		if err != nil {
-			return nil, err
+			return html.Attributes{}, err
 		}
 
 		byte := bytes[0]
@@ -62,7 +62,7 @@ func parseAttributes(r *bufio.Reader) (*html.Attributes, error) {
 			_, err := r.Discard(1)
 
 			if err != nil {
-				return nil, err
+				return html.Attributes{}, err
 			}
 
 			continue
@@ -71,44 +71,45 @@ func parseAttributes(r *bufio.Reader) (*html.Attributes, error) {
 		attribute, err := parseAttribute(r)
 
 		if err != nil {
-			return nil, err
+			return html.Attributes{}, err
 		}
 
 		attributes = append(attributes, attribute)
 	}
 
-	attributes = slices.DeleteFunc(attributes, func(a *html.Attribute) bool {
-		return a == nil
+	attributes = slices.DeleteFunc(attributes, func(a html.Attribute) bool {
+		return a == html.Attribute{}
 	})
 
 	if len(attributes) == 0 {
-		return nil, nil
+		return html.Attributes{}, nil
 	}
 
 	return html.NewAttributes(attributes), nil
 }
 
-func parseAttribute(r *bufio.Reader) (*html.Attribute, error) {
+func parseAttribute(r *bufio.Reader) (html.Attribute, error) {
 	attributeName, err := parseAttributeName(r)
 
 	if err != nil {
-		return nil, err
+		return html.Attribute{}, err
 	}
 
 	if attributeName == "" {
-		return nil, err
+		return html.Attribute{}, err
 	}
 
 	value, err := parseValue(r)
 
 	if err != nil {
-		return nil, err
+		return html.Attribute{}, err
 	}
 
-	attribute := &html.Attribute{
+	attribute := html.Attribute{
 		Name:  attributeName,
 		Value: value,
 	}
+
 	return attribute, nil
 }
 

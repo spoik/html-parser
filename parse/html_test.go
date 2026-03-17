@@ -14,16 +14,16 @@ import (
 func TestSuccessfulParseHtml(t *testing.T) {
 	type testCase struct {
 		html         string
-		expectedTags *html.Tags
+		expectedTags html.Tags
 	}
 
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{{
+				Tags: []html.Tag{{
 					Type: "a",
-					Attributes: html.NewAttributes([]*html.Attribute{
+					Attributes: html.NewAttributes([]html.Attribute{
 						{
 							Name:  "href",
 							Value: "https://example.com",
@@ -37,7 +37,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<html>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{{
+				Tags: []html.Tag{{
 					Type: "html",
 					Tags: html.EmptyTags(),
 				}},
@@ -46,7 +46,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<hr/>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{{
+				Tags: []html.Tag{{
 					Type: "hr",
 					Tags: html.EmptyTags(),
 				}},
@@ -55,7 +55,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<hr",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{{
+				Tags: []html.Tag{{
 					Type: "hr",
 					Tags: html.EmptyTags(),
 				}},
@@ -64,15 +64,15 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<img src><hr data>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type:       "img",
-						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
+						Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "hr",
-									Attributes: html.NewAttributes([]*html.Attribute{
+									Attributes: html.NewAttributes([]html.Attribute{
 										{Name: "data"},
 									}),
 									Tags: html.EmptyTags(),
@@ -86,15 +86,15 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<img src/><hr data/>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type:       "img",
-						Attributes: html.NewAttributes([]*html.Attribute{{Name: "src"}}),
+						Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
 						Tags:       html.EmptyTags(),
 					},
 					{
 						Type:       "hr",
-						Attributes: html.NewAttributes([]*html.Attribute{{Name: "data"}}),
+						Attributes: html.NewAttributes([]html.Attribute{{Name: "data"}}),
 						Tags:       html.EmptyTags(),
 					},
 				},
@@ -103,7 +103,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<img/><hr/>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "img",
 						Tags: html.EmptyTags(),
@@ -118,11 +118,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<div><p>Paragraph text",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "div",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
@@ -137,12 +137,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<div>Div text<p>Paragraph text</p>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
@@ -157,12 +157,12 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<div>Div text<p>Paragraph text</p></div>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "div",
 						Text: "Div text",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "p",
 									Text: "Paragraph text",
@@ -177,15 +177,15 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<div><p><a></a></p></div>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "div",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "p",
 									Tags: html.NewTags(html.NewTagsOpts{
-										Tags: []*html.Tag{
+										Tags: []html.Tag{
 											{
 												Type: "a",
 												Tags: html.EmptyTags(),
@@ -202,11 +202,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		{
 			"<div><p></p><a></a></div>",
 			html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "div",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{
+							Tags: []html.Tag{
 								{
 									Type: "p",
 									Tags: html.EmptyTags(),
@@ -226,11 +226,11 @@ func TestSuccessfulParseHtml(t *testing.T) {
 		// {
 		// 	"<blockquote><br><em></em></blockquote>",
 		// 	html.NewTags(html.NewTagsOpts{
-		// 		Tags: []*html.Tag{
+		// 		Tags: []html.Tag{
 		// 			{
 		// 				Type: "blockquote",
 		// 				Tags: html.NewTags(html.NewTagsOpts{
-		// 					Tags: []*html.Tag{
+		// 					Tags: []html.Tag{
 		// 						{
 		// 							Type: "br",
 		// 							Tags: html.EmptyTags(),
@@ -253,10 +253,15 @@ func TestSuccessfulParseHtml(t *testing.T) {
 			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.NoError(t, err)
+
 			assert.Condition(
 				t,
 				func() bool { return testCase.expectedTags.Equal(tags) },
-				fmt.Sprintf("Tags are not equal: \"%s\" does not equal \"%s\"", tags, testCase.expectedTags),
+				fmt.Sprintf(
+					"Tags are not equal: Expected \"%s\" got \"%s\"",
+					testCase.expectedTags,
+					tags,
+				),
 			)
 		})
 	}
@@ -265,7 +270,7 @@ func TestSuccessfulParseHtml(t *testing.T) {
 func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 	type testCase struct {
 		html         string
-		expectedTags *html.Tags
+		expectedTags html.Tags
 	}
 
 	tagTypes := []string{"br", "hr", "img", "input", "link", "meta", "source"}
@@ -277,11 +282,11 @@ func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 		testCases[index] = testCase{
 			html: fmt.Sprintf("<section><%s></section>", tagType),
 			expectedTags: html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "section",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{{
+							Tags: []html.Tag{{
 								Type: tagType,
 								Tags: html.EmptyTags(),
 							}},
@@ -294,11 +299,11 @@ func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 		testCases[index+1] = testCase{
 			html: fmt.Sprintf("<section><%s></%s></section>", tagType, tagType),
 			expectedTags: html.NewTags(html.NewTagsOpts{
-				Tags: []*html.Tag{
+				Tags: []html.Tag{
 					{
 						Type: "section",
 						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []*html.Tag{{
+							Tags: []html.Tag{{
 								Type: tagType,
 								Tags: html.EmptyTags(),
 							}},
@@ -354,10 +359,10 @@ func TestUnsuccessfulParseHtml(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.html, func(t *testing.T) {
 			t.Parallel()
-			tag, err := parse.ParseHtml(&testCase.html)
+			tags, err := parse.ParseHtml(&testCase.html)
 
 			require.Error(t, err)
-			assert.Nil(t, tag)
+			assert.Equal(t, html.Tags{}, tags)
 			assert.EqualError(t, err, testCase.errorMessage)
 		})
 	}

@@ -7,24 +7,24 @@ import (
 )
 
 type Tags struct {
-	tags     []*Tag
+	tags     []Tag
 	tagIndex *TagIndex
 }
 
 type NewTagsOpts struct {
-	Tags     []*Tag
+	Tags     []Tag
 	TagIndex *TagIndex
 }
 
-func EmptyTags() *Tags {
+func EmptyTags() Tags {
 	return NewTags(NewTagsOpts{})
 }
 
-func NewTags(o NewTagsOpts) *Tags {
+func NewTags(o NewTagsOpts) Tags {
 	tags := o.Tags
 
 	if tags == nil {
-		tags = []*Tag{}
+		tags = []Tag{}
 	}
 
 	tagIndex := o.TagIndex
@@ -32,12 +32,13 @@ func NewTags(o NewTagsOpts) *Tags {
 	if tagIndex == nil {
 		tagIndex = &TagIndex{}
 	}
-	return &Tags{tags: tags, tagIndex: tagIndex}
+
+	return Tags{tags: tags, tagIndex: tagIndex}
 }
 
 var NoTagAtIndex = errors.New("No tag at index.")
 
-func (t *Tags) String() string {
+func (t Tags) String() string {
 	var b strings.Builder
 
 	for _, tag := range t.tags {
@@ -48,19 +49,19 @@ func (t *Tags) String() string {
 }
 
 // Returns the tag at the given index. If there is no Tag at the index, nil is returned.
-func (t *Tags) Get(index int) (*Tag, error) {
+func (t *Tags) Get(index int) (Tag, error) {
 	if t.tags == nil {
-		return nil, NoTagAtIndex
+		return Tag{}, NoTagAtIndex
 	}
 
 	if index > t.Len() {
-		return nil, NoTagAtIndex
+		return Tag{}, NoTagAtIndex
 	}
 
 	return t.tags[index], nil
 }
 
-func (t *Tags) Equal(other *Tags) bool {
+func (t *Tags) Equal(other Tags) bool {
 	return reflect.DeepEqual(t.tags, other.tags)
 }
 
@@ -74,17 +75,13 @@ func (t *Tags) FullLen() int {
 	fullLen := t.Len()
 
 	for _, tag := range t.tags {
-		if tag.Tags == nil {
-			continue
-		}
-
 		fullLen += tag.Tags.FullLen()
 	}
 
 	return fullLen
 }
 
-func (t *Tags) Find(tagType string) []*Tag {
+func (t *Tags) Find(tagType string) []Tag {
 	if t.tagIndex == nil {
 		panic("Unable to Find tag by type. TagIndex is nil.")
 	}

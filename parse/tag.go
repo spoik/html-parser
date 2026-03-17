@@ -23,38 +23,38 @@ func isAttributeDeliminer(b byte) bool {
 	return b == attributeDeliminer
 }
 
-func ParseTag(r *bufio.Reader, index *html.TagIndex) (*html.Tag, error) {
+func ParseTag(r *bufio.Reader, index *html.TagIndex) (html.Tag, error) {
 	tagType, err := parseTagType(r)
 
 	if err != nil {
-		return nil, err
+		return html.Tag{}, err
 	}
 
 	attributes, err := getAttributes(r)
 
 	if err != nil {
-		return nil, err
+		return html.Tag{}, err
 	}
 
 	text, err := getText(r)
 
 	if err != nil {
-		return nil, err
+		return html.Tag{}, err
 	}
 
 	internalTags, err := parseInternalTags(r, index)
 
 	if err != nil {
-		return nil, err
+		return html.Tag{}, err
 	}
 
 	err = parseClosingTag(tagType, r)
 
 	if err != nil {
-		return nil, err
+		return html.Tag{}, err
 	}
 
-	tag := &html.Tag{
+	tag := html.Tag{
 		Type:       tagType,
 		Text:       text,
 		Attributes: attributes,
@@ -62,7 +62,7 @@ func ParseTag(r *bufio.Reader, index *html.TagIndex) (*html.Tag, error) {
 	}
 
 	if index != nil {
-		index.Add(tag)
+		index.Add(&tag)
 	}
 
 	return tag, nil
@@ -108,10 +108,10 @@ func parseTagType(r *bufio.Reader) (string, error) {
 	return typeBuilder.String(), nil
 }
 
-func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error) {
+func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (html.Tags, error) {
 	// TODO: Initialize childTags with a starting size to
 	//minimize how often the slice is resized
-	childTags := []*html.Tag{}
+	childTags := []html.Tag{}
 
 	for {
 		bytes, err := r.Peek(2)
@@ -121,7 +121,7 @@ func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error
 		}
 
 		if err != nil {
-			return nil, err
+			return html.Tags{}, err
 		}
 
 		// If the next two bytes are a tag's closing tags, stop parsing internal tags.
@@ -142,7 +142,7 @@ func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error
 			_, err = r.Discard(1)
 
 			if err != nil {
-				return nil, err
+				return html.Tags{}, err
 			}
 
 			continue
@@ -153,13 +153,13 @@ func parseInternalTags(r *bufio.Reader, index *html.TagIndex) (*html.Tags, error
 		_, err = r.Discard(1)
 
 		if err != nil {
-			return nil, err
+			return html.Tags{}, err
 		}
 
 		childTag, err := ParseTag(r, index)
 
 		if err != nil {
-			return nil, err
+			return html.Tags{}, err
 		}
 
 		childTags = append(childTags, childTag)
