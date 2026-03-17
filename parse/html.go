@@ -19,10 +19,7 @@ func ParseHtml(s *string) (html.Tags, error) {
 		return html.Tags{}, err
 	}
 
-	return html.NewTags(html.NewTagsOpts{
-		Tags: tags,
-		TagIndex: index,
-	}), nil
+	return html.NewTags(tags, html.WithIndex(index)), nil
 }
 
 func parseHtml(s *string, index *html.TagIndex) ([]html.Tag, error) {

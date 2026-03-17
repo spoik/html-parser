@@ -11,32 +11,23 @@ type Tags struct {
 	tagIndex *TagIndex
 }
 
-type NewTagsOpts struct {
-	Tags     []Tag
-	TagIndex *TagIndex
+type newTagsOption func(*Tags)
+
+func WithIndex(i *TagIndex) newTagsOption {
+	return func(t *Tags) {
+		t.tagIndex = i
+	}
 }
 
-func EmptyTags() Tags {
-	return NewTags(NewTagsOpts{})
-}
+func NewTags(tags []Tag, options ...newTagsOption) Tags {
+	t := Tags{tags: tags}
 
-func NewTags(o NewTagsOpts) Tags {
-	tags := o.Tags
-
-	if tags == nil {
-		tags = []Tag{}
+	for _, option := range options {
+		option(&t)
 	}
 
-	tagIndex := o.TagIndex
-
-	if tagIndex == nil {
-		tagIndex = &TagIndex{}
-	}
-
-	return Tags{tags: tags, tagIndex: tagIndex}
+	return t
 }
-
-var NoTagAtIndex = errors.New("No tag at index.")
 
 func (t Tags) String() string {
 	var b strings.Builder
@@ -47,6 +38,8 @@ func (t Tags) String() string {
 
 	return b.String()
 }
+
+var NoTagAtIndex = errors.New("No tag at index.")
 
 // Returns the tag at the given index. If there is no Tag at the index, nil is returned.
 func (t *Tags) Get(index int) (Tag, error) {

@@ -11,10 +11,7 @@ func createTagsWithIndex(tags []html.Tag) html.Tags {
 	index := &html.TagIndex{}
 	index.AddAll(tags)
 
-	return html.NewTags(html.NewTagsOpts{
-		Tags:     tags,
-		TagIndex: index,
-	})
+	return html.NewTags(tags, html.WithIndex(index))
 }
 
 func TestFind(t *testing.T) {
@@ -55,10 +52,8 @@ func TestFind(t *testing.T) {
 							Value: "Value",
 						},
 					}),
-					Tags: html.NewTags(html.NewTagsOpts{
-						Tags: []html.Tag{
-							{Type: "p"},
-						},
+					Tags: html.NewTags([]html.Tag{
+						{Type: "p"},
 					}),
 				},
 			}),
@@ -94,16 +89,12 @@ func TestFind(t *testing.T) {
 			Tags: createTagsWithIndex([]html.Tag{
 				{
 					Type: "a",
-					Tags: html.NewTags(html.NewTagsOpts{
-						Tags: []html.Tag{
-							{
-								Type: "a",
-								Tags: html.NewTags(html.NewTagsOpts{
-									Tags: []html.Tag{
-										{Type: "a"},
-									},
-								}),
-							},
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "a",
+							Tags: html.NewTags([]html.Tag{
+								{Type: "a"},
+							}),
 						},
 					}),
 				},
@@ -133,11 +124,9 @@ func TestFindDoesNotModifyOriginalTags(t *testing.T) {
 	tags := createTagsWithIndex([]html.Tag{
 		{
 			Type: "a",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{Type: "p"},
-					{Type: "img"},
-				},
+			Tags: html.NewTags([]html.Tag{
+				{Type: "p"},
+				{Type: "img"},
 			}),
 		},
 	})
@@ -176,19 +165,15 @@ func TestGet(t *testing.T) {
 			ExpectedError:  html.NoTagAtIndex,
 		},
 		{
-			Name: "Out of bounds index.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{Type: "a"}},
-			}),
+			Name:           "Out of bounds index.",
+			Tags:           html.NewTags([]html.Tag{{Type: "a"}}),
 			Index:          4,
 			ExpectedResult: html.Tag{},
 			ExpectedError:  html.NoTagAtIndex,
 		},
 		{
-			Name: "Valid index.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{Type: "a"}},
-			}),
+			Name:           "Valid index.",
+			Tags:           html.NewTags([]html.Tag{{Type: "a"}}),
 			Index:          0,
 			ExpectedResult: html.Tag{Type: "a"},
 			ExpectedError:  nil,
@@ -227,20 +212,16 @@ func TestLen(t *testing.T) {
 			ExpectedResult: 0,
 		},
 		{
-			Name: "Tags with empty tags slice.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{},
-			}),
+			Name:           "Tags with empty tags slice.",
+			Tags:           html.NewTags([]html.Tag{}),
 			ExpectedResult: 0,
 		},
 		{
 			Name: "Tags with tags slice.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{Type: "a"},
-					{Type: "p"},
-					{Type: "img"},
-				},
+			Tags: html.NewTags([]html.Tag{
+				{Type: "a"},
+				{Type: "p"},
+				{Type: "img"},
 			}),
 			ExpectedResult: 3,
 		},
@@ -271,48 +252,35 @@ func TestFullLen(t *testing.T) {
 		},
 		{
 			Name: "One tag.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{Type: "a"},
-				},
+			Tags: html.NewTags([]html.Tag{
+				{Type: "a"},
 			}),
 			ExpectedResult: 1,
 		},
 		{
 			Name: "Two tag.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{Type: "a"},
-					{Type: "p"},
-				},
+			Tags: html.NewTags([]html.Tag{
+				{Type: "a"},
+				{Type: "p"},
 			}),
 			ExpectedResult: 2,
 		},
 		{
 			Name: "Deeply nested tags.",
-			Tags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "a",
-						Tags: html.NewTags(
-							html.NewTagsOpts{
-								Tags: []html.Tag{
-									{Type: "img"},
-									{Type: "p"},
-								},
-							},
-						),
+			Tags: html.NewTags([]html.Tag{
+				{
+					Type: "a",
+					Tags: html.NewTags([]html.Tag{
+						{Type: "img"},
+						{Type: "p"},
 					},
-					{
-						Type: "p",
-						Tags: html.NewTags(
-							html.NewTagsOpts{
-								Tags: []html.Tag{
-									{Type: "p"},
-								},
-							},
-						),
-					},
+					),
+				},
+				{
+					Type: "p",
+					Tags: html.NewTags([]html.Tag{
+						{Type: "p"},
+					}),
 				},
 			}),
 			ExpectedResult: 5,
@@ -337,20 +305,16 @@ func TestTagsString(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			Tags: html.NewTags(
-				html.NewTagsOpts{
-					Tags: []html.Tag{
-						{
-							Type: "a",
-							Text: "Anchor text",
-						},
-						{
-							Type: "span",
-							Text: "Span text",
-						},
-					},
+			Tags: html.NewTags([]html.Tag{
+				{
+					Type: "a",
+					Text: "Anchor text",
 				},
-			),
+				{
+					Type: "span",
+					Text: "Span text",
+				},
+			}),
 			ExpectedResult: "<a>Anchor text</a><span>Span text</span>",
 		},
 	}

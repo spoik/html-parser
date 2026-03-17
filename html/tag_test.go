@@ -29,9 +29,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with no text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{{Type: "a"}},
-				}),
+				Tags: html.NewTags([]html.Tag{{Type: "a"}}),
 			},
 			ExpectedString: "Hello",
 		},
@@ -39,9 +37,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{{Text: "World"}},
-				}),
+				Tags: html.NewTags([]html.Tag{{Text: "World"}}),
 			},
 			ExpectedString: "HelloWorld",
 		},
@@ -49,9 +45,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{{Text: " World"}},
-				}),
+				Tags: html.NewTags([]html.Tag{{Text: " World"}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -59,9 +53,7 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and child tag with text and leading space",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{{Text: " World"}},
-				}),
+				Tags: html.NewTags([]html.Tag{{Text: " World"}}),
 			},
 			ExpectedString: "Hello World",
 		},
@@ -69,11 +61,9 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and multiple child tags",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{
-						{Text: "There"},
-						{Text: "World"},
-					},
+				Tags: html.NewTags([]html.Tag{
+					{Text: "There"},
+					{Text: "World"},
 				}),
 			},
 			ExpectedString: "HelloThereWorld",
@@ -82,20 +72,14 @@ func TestFullText(t *testing.T) {
 			Name: "Tag with text and multiple child tags with their own child tags",
 			Tag: html.Tag{
 				Text: "Hello",
-				Tags: html.NewTags(html.NewTagsOpts{
-					Tags: []html.Tag{
-						{
-							Text: "There",
-							Tags: html.NewTags(html.NewTagsOpts{
-								Tags: []html.Tag{{Text: "How"}},
-							}),
-						},
-						{
-							Text: "Are",
-							Tags: html.NewTags(html.NewTagsOpts{
-								Tags: []html.Tag{{Text: "You"}},
-							}),
-						},
+				Tags: html.NewTags([]html.Tag{
+					{
+						Text: "There",
+						Tags: html.NewTags([]html.Tag{{Text: "How"}}),
+					},
+					{
+						Text: "Are",
+						Tags: html.NewTags([]html.Tag{{Text: "You"}}),
 					},
 				}),
 			},
@@ -226,20 +210,16 @@ func TestTagString(t *testing.T) {
 			Tag: html.Tag{
 				Type: "section",
 				Text: "Section text",
-				Tags: html.NewTags(
-					html.NewTagsOpts{
-						Tags: []html.Tag{
-							{
-								Type: "div",
-								Text: "Div text",
-							},
-							{
-								Type: "span",
-								Text: "Span text",
-							},
-						},
+				Tags: html.NewTags([]html.Tag{
+					{
+						Type: "div",
+						Text: "Div text",
 					},
-				),
+					{
+						Type: "span",
+						Text: "Span text",
+					},
+				}),
 			},
 			ExpectedResult: "<section>Section text<div>Div text</div><span>Span text</span></section>",
 		},
@@ -247,24 +227,18 @@ func TestTagString(t *testing.T) {
 			Tag: html.Tag{
 				Type: "section",
 				Text: "Section text",
-				Tags: html.NewTags(
-					html.NewTagsOpts{
-						Tags: []html.Tag{
+				Tags: html.NewTags([]html.Tag{
+					{
+						Type: "div",
+						Text: "Div text",
+						Tags: html.NewTags([]html.Tag{
 							{
-								Type: "div",
-								Text: "Div text",
-								Tags: html.NewTags(html.NewTagsOpts{
-									Tags: []html.Tag{
-										{
-											Type: "span",
-											Text: "Span text",
-										},
-									},
-								}),
+								Type: "span",
+								Text: "Span text",
 							},
-						},
+						}),
 					},
-				),
+				}),
 			},
 			ExpectedResult: "<section>Section text<div>Div text<span>Span text</span></div></section>",
 		},
