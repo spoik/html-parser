@@ -20,204 +20,166 @@ func TestSuccessfulParseHtml(t *testing.T) {
 	testCases := []testCase{
 		{
 			"<a href=\"https://example.com\">",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{
-					Type: "a",
-					Attributes: html.NewAttributes([]html.Attribute{
-						{
-							Name:  "href",
-							Value: "https://example.com",
-						},
-					}),
-					Tags: html.EmptyTags(),
-				}},
-			},
+			html.NewTags([]html.Tag{{
+				Type: "a",
+				Attributes: html.NewAttributes([]html.Attribute{
+					{
+						Name:  "href",
+						Value: "https://example.com",
+					},
+				}),
+				Tags: html.NewTags([]html.Tag{}),
+			}},
 			),
 		},
 		{
 			"<html>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{
-					Type: "html",
-					Tags: html.EmptyTags(),
-				}},
-			}),
+			html.NewTags([]html.Tag{{
+				Type: "html",
+				Tags: html.NewTags([]html.Tag{}),
+			}}),
 		},
 		{
 			"<hr/>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{
-					Type: "hr",
-					Tags: html.EmptyTags(),
-				}},
-			}),
+			html.NewTags([]html.Tag{{
+				Type: "hr",
+				Tags: html.NewTags([]html.Tag{}),
+			}}),
 		},
 		{
 			"<hr",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{{
-					Type: "hr",
-					Tags: html.EmptyTags(),
-				}},
-			}),
+			html.NewTags([]html.Tag{{
+				Type: "hr",
+				Tags: html.NewTags([]html.Tag{}),
+			}}),
 		},
 		{
 			"<img src><hr data>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type:       "img",
-						Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
-								{
-									Type: "hr",
-									Attributes: html.NewAttributes([]html.Attribute{
-										{Name: "data"},
-									}),
-									Tags: html.EmptyTags(),
-								},
-							},
-						}),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type:       "img",
+					Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "hr",
+							Attributes: html.NewAttributes([]html.Attribute{
+								{Name: "data"},
+							}),
+							Tags: html.NewTags([]html.Tag{}),
+						},
+					}),
 				},
 			}),
 		},
 		{
 			"<img src/><hr data/>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type:       "img",
-						Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
-						Tags:       html.EmptyTags(),
-					},
-					{
-						Type:       "hr",
-						Attributes: html.NewAttributes([]html.Attribute{{Name: "data"}}),
-						Tags:       html.EmptyTags(),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type:       "img",
+					Attributes: html.NewAttributes([]html.Attribute{{Name: "src"}}),
+					Tags:       html.NewTags([]html.Tag{}),
+				},
+				{
+					Type:       "hr",
+					Attributes: html.NewAttributes([]html.Attribute{{Name: "data"}}),
+					Tags:       html.NewTags([]html.Tag{}),
 				},
 			}),
 		},
 		{
 			"<img/><hr/>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "img",
-						Tags: html.EmptyTags(),
-					},
-					{
-						Type: "hr",
-						Tags: html.EmptyTags(),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type: "img",
+					Tags: html.NewTags([]html.Tag{}),
+				},
+				{
+					Type: "hr",
+					Tags: html.NewTags([]html.Tag{}),
 				},
 			}),
 		},
 		{
 			"<div><p>Paragraph text",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "div",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
-								{
-									Type: "p",
-									Text: "Paragraph text",
-									Tags: html.EmptyTags(),
-								},
-							},
-						}),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "p",
+							Text: "Paragraph text",
+							Tags: html.NewTags([]html.Tag{}),
+						},
+					}),
 				},
 			}),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "div",
-						Text: "Div text",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
-								{
-									Type: "p",
-									Text: "Paragraph text",
-									Tags: html.EmptyTags(),
-								},
-							},
-						}),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Text: "Div text",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "p",
+							Text: "Paragraph text",
+							Tags: html.NewTags([]html.Tag{}),
+						},
+					}),
 				},
 			}),
 		},
 		{
 			"<div>Div text<p>Paragraph text</p></div>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "div",
-						Text: "Div text",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
-								{
-									Type: "p",
-									Text: "Paragraph text",
-									Tags: html.EmptyTags(),
-								},
-							},
-						}),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Text: "Div text",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "p",
+							Text: "Paragraph text",
+							Tags: html.NewTags([]html.Tag{}),
+						},
+					}),
 				},
 			}),
 		},
 		{
 			"<div><p><a></a></p></div>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "div",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
+			html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "p",
+							Tags: html.NewTags([]html.Tag{
 								{
-									Type: "p",
-									Tags: html.NewTags(html.NewTagsOpts{
-										Tags: []html.Tag{
-											{
-												Type: "a",
-												Tags: html.EmptyTags(),
-											},
-										},
-									}),
+									Type: "a",
+									Tags: html.NewTags([]html.Tag{}),
 								},
-							},
-						}),
-					},
+							}),
+						},
+					}),
 				},
 			}),
 		},
 		{
 			"<div><p></p><a></a></div>",
-			html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "div",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{
-								{
-									Type: "p",
-									Tags: html.EmptyTags(),
-								},
-								{
-									Type: "a",
-									Tags: html.EmptyTags(),
-								},
-							},
-						}),
-					},
+			html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "p",
+							Tags: html.NewTags([]html.Tag{}),
+						},
+						{
+							Type: "a",
+							Tags: html.NewTags([]html.Tag{}),
+						},
+					}),
 				},
 			}),
 		},
@@ -281,34 +243,26 @@ func TestParseHtmlWithTagsWithAnOptionalClosingTag(t *testing.T) {
 
 		testCases[index] = testCase{
 			html: fmt.Sprintf("<section><%s></section>", tagType),
-			expectedTags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "section",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{{
-								Type: tagType,
-								Tags: html.EmptyTags(),
-							}},
-						}),
-					},
+			expectedTags: html.NewTags([]html.Tag{
+				{
+					Type: "section",
+					Tags: html.NewTags([]html.Tag{{
+						Type: tagType,
+						Tags: html.NewTags([]html.Tag{}),
+					}}),
 				},
 			}),
 		}
 
 		testCases[index+1] = testCase{
 			html: fmt.Sprintf("<section><%s></%s></section>", tagType, tagType),
-			expectedTags: html.NewTags(html.NewTagsOpts{
-				Tags: []html.Tag{
-					{
-						Type: "section",
-						Tags: html.NewTags(html.NewTagsOpts{
-							Tags: []html.Tag{{
-								Type: tagType,
-								Tags: html.EmptyTags(),
-							}},
-						}),
-					},
+			expectedTags: html.NewTags([]html.Tag{
+				{
+					Type: "section",
+					Tags: html.NewTags([]html.Tag{{
+						Type: tagType,
+						Tags: html.NewTags([]html.Tag{}),
+					}}),
 				},
 			}),
 		}

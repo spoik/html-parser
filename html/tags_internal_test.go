@@ -39,7 +39,7 @@ func TestNewTags(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			result := NewTags(NewTagsOpts{Tags: testCase.Tags})
+			result := NewTags(testCase.Tags)
 			assert.Condition(
 				t,
 				func() bool { return testCase.ExpectedResult.Equal(result) },
