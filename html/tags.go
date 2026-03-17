@@ -2,6 +2,7 @@ package html
 
 import (
 	"errors"
+	"iter"
 	"reflect"
 	"strings"
 )
@@ -52,6 +53,16 @@ func (t *Tags) Get(index int) (Tag, error) {
 	}
 
 	return t.tags[index], nil
+}
+
+func (t *Tags) AllTags() iter.Seq2[int, Tag] {
+	return func(yield func(int, Tag) bool) {
+		for i, tag := range t.tags {
+			if !yield(i, tag) {
+				return
+			}
+		}
+	}
 }
 
 func (t *Tags) Equal(other Tags) bool {

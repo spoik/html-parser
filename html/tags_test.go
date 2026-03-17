@@ -333,3 +333,97 @@ func TestTagsString(t *testing.T) {
 		})
 	}
 }
+
+func TestIterator(t *testing.T) {
+	type testCase struct {
+		Tags           html.Tags
+		ExpectedResult []html.Tag
+	}
+
+	testCases := []testCase{
+		{
+			Tags:           html.NewTags([]html.Tag{}),
+			ExpectedResult: []html.Tag{},
+		},
+		{
+			Tags: html.NewTags([]html.Tag{
+				{
+					Type: "a",
+					Text: "text",
+				},
+			}),
+			ExpectedResult: []html.Tag{
+				{
+					Type: "a",
+					Text: "text",
+				},
+			},
+		},
+		{
+			Tags: html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Text: "text",
+				},
+				{
+					Type: "a",
+					Text: "text",
+				},
+			}),
+			ExpectedResult: []html.Tag{
+				{
+					Type: "div",
+					Text: "text",
+				},
+				{
+					Type: "a",
+					Text: "text",
+				},
+			},
+		},
+		{
+			Tags: html.NewTags([]html.Tag{
+				{
+					Type: "div",
+					Text: "text",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "a",
+							Text: "text",
+						},
+					}),
+				},
+			}),
+			ExpectedResult: []html.Tag{
+				{
+					Type: "div",
+					Text: "text",
+					Tags: html.NewTags([]html.Tag{
+						{
+							Type: "a",
+							Text: "text",
+						},
+					}),
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Tags.String(), func(t *testing.T) {
+			t.Parallel()
+
+			results := make([]html.Tag, testCase.Tags.Len())
+
+			for i, tag := range testCase.Tags.AllTags() {
+				results[i] = tag
+			}
+
+			assert.Equal(
+				t,
+				testCase.ExpectedResult,
+				results,
+			)
+		})
+	}
+}
