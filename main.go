@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
-	html := "<p>Example 1<span>Example 2</span><span>Example 3</span></p>"
+	html := "<p>Example 2</p><section>Section <p>Paragraph</p>"
 	tags, _ := parse.ParseHtml(&html)
 
-	tag, _ := tags.Get(0)
-	fmt.Println(tag.FullText())
+	for t := range tags.AllTagsDeep() {
+		fmt.Println(t)
+	}
 }

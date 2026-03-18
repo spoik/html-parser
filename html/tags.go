@@ -86,6 +86,9 @@ func (t *Tags) AllTagsDeep() iter.Seq[Tag] {
 	}
 }
 
+//Determines if two html.Tags instances contain the same child html.Tag's. The equality check is deep. The
+// html.Tags instances are considered equal if they contain the same number of child html.Tag's and each html.Tag
+// instances contain the same field values.
 func (t *Tags) Equal(other Tags) bool {
 	return reflect.DeepEqual(t.tags, other.tags)
 }

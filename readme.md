@@ -94,6 +94,51 @@ func main() {
 }
 ```
 
+#### `html.Tags.AllTags()`
+Iterator method that returns each child tag. Does not return each child's children. Use AllTagsDeep() to deeply iterate.
+```go
+import (
+	"fmt"
+	"github.com/spoik/html-parser/parse"
+)
+
+func main() {
+	html := "<p>Example 2</p><section>Section <p>Paragraph</p>"
+	tags, _ := parse.ParseHtml(&html)
+
+	for i, t := range tags.AllTags() {
+		fmt.Printf("%d %s\n", i, t)
+	}
+
+	// Will output the following:
+	// 0 <p>Example 2</p>
+	// 1 <section>Section <p>Paragraph</p></section>
+}
+```
+
+#### `html.Tags.AllTagsDeep()`
+Iterator that returns every tag in this Tags instance including every child tag.
+```go
+import (
+	"fmt"
+	"github.com/spoik/html-parser/parse"
+)
+
+func main() {
+	html := "<p>Example 2</p><section>Section <p>Paragraph</p>"
+	tags, _ := parse.ParseHtml(&html)
+
+	for i, t := range tags.AllTagsDeep() {
+		fmt.Printf("%d %s\n", i, t)
+	}
+
+	// Will output the following:
+	// <p>Example 2</p>
+	// <section>Section </section>
+	// <p>Paragraph</p>
+}
+```
+
 ### `html.Tag`
 #### `html.Tag.FullText()`
 Returns the tag's text concatenated with it's children's text.
