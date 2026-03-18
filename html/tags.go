@@ -55,11 +55,32 @@ func (t *Tags) Get(index int) (Tag, error) {
 	return t.tags[index], nil
 }
 
+// Iterator method that returns each child tag. Does not return each child's children. Use AllTagsDeep() to deeply iterate.
 func (t *Tags) AllTags() iter.Seq2[int, Tag] {
 	return func(yield func(int, Tag) bool) {
 		for i, tag := range t.tags {
 			if !yield(i, tag) {
 				return
+			}
+		}
+	}
+}
+
+// Iterator that returns every tag in this Tags instance including every child tag.
+func (t *Tags) AllTagsDeep() iter.Seq[Tag] {
+	return func(yield func(Tag) bool) {
+		for _, tag := range t.AllTags() {
+			tagCopy := tag
+			tagCopy.Tags = Tags{}
+
+			if !yield(tagCopy) {
+				return
+			}
+
+			for childTag := range tag.Tags.AllTagsDeep() {
+				if !yield(childTag) {
+					return
+				}
 			}
 		}
 	}
