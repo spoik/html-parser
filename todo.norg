@@ -1,1 +1,1 @@
-- ( ) Add iterator to Tags.
+- ( ) Output attributes when calling html.Tags.String()
