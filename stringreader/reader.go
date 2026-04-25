@@ -5,16 +5,16 @@ import (
 )
 
 type StringReader struct {
-	str   string
-	pos int
-	strLen   int
+	str    string
+	pos    int
+	strLen int
 }
 
 func New(string string) *StringReader {
 	return &StringReader{
-		str:   string,
-		strLen:   len(string),
-		pos: -1,
+		str:    string,
+		strLen: len(string),
+		pos:    -1,
 	}
 }
 
